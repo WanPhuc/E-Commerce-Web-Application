@@ -1,0 +1,16 @@
+@if (loading()) {
+  <div class="loading-screen">
+    <div class="spinner"></div>
+    <p>Đang tải...</p>
+  </div>
+} @else {
+  <div class="layout">
+
+  <main class="layout__main">
+    <router-outlet></router-outlet>
+  </main>
+
+  
+</div>
+
+}

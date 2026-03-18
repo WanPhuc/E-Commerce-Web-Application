@@ -1,0 +1,57 @@
+.container-signin{
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #8bb4f7, #c088f5);
+    .signin-card{
+        width: 40%;
+
+        .icon-circle{
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-input {
+            transition: 0.2s;
+
+            .input-group {
+                /* 1. Khi Focus bình thường (Không có lỗi) */
+                &:focus-within:not(:has(.is-invalid)) {
+                .form-control {
+                    border-color: #86b7fe;
+                }
+                .input-group-text {
+                    border-color: #86b7fe;
+                    color: #0d6efd;
+                    background-color: #e7f1ff;
+                }
+                }
+            }
+
+            /* 2. Khi có lỗi (Dùng cho Icon phía trước) */
+            .icon-invalid {
+                border-color: #dc3545 !important;
+                color: #dc3545 !important;
+                background-color: #f8d7da !important;
+            }
+
+            /* 3. Đồng bộ đường kẻ giữa icon và input khi có lỗi */
+            .input-group:has(.is-invalid) {
+                .input-group-text {
+                    border-right: none; // Đảm bảo không bị 2 đường kẻ ở giữa
+                }
+                .form-control:focus {
+                    border-color: #dc3545;
+                    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25); // Đổ bóng đỏ thay vì xanh
+                }
+            }
+        }
+
+        
+    }
+
+
+    
+}

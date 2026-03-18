@@ -1,0 +1,81 @@
+<div class="container-fluid">
+    <button class="btn btn-secondary" [routerLink]="'/admin/user'">Quay lai</button>
+    @if (loading()) {
+        <div class="text-center my-5"><div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        </div>
+    }
+    <div class="container-card">
+        @if (!loading()&&userDetail()) {
+            <div class="card ">
+                <div class="text-center">
+                    <h4>Detail User</h4>  
+                </div>                
+                <div class="card-body">
+                    <div class="card-detail">
+                        <div>
+                            <b>Id :</b>
+                            <span>{{userDetail()!.id}}</span>
+                        </div>
+                        <div>
+                            <b>Full Name :</b>
+                            <span>{{userDetail()!.fullName}}</span>
+                        </div>
+                        <div>
+                            <b>Email :</b>
+                            <span>{{userDetail()!.email}}</span>
+                        </div>
+                        <div>
+                            <b>Create At :</b>
+                            <span>{{userDetail()!.createdAt|date:'yyyy-MM-dd HH:mm:ss'}}</span>
+                        </div>
+                        <div>
+                            <b>Role :</b>
+                            <span>{{userDetail()!.role}}</span>
+                        </div>
+                        <div>
+                            <b>Is Active :</b>
+                            @if (userDetail()?.isActive) {
+                                <span class="badge bg-success">Yes</span>
+                            }@else {
+                                <span class="badge bg-secondary">No</span>
+                            }
+                        </div>
+                        
+                        @if (userDetail()?.seller) {
+                            <div>
+                                <b>Is Seller :</b>
+                                <span class="badge bg-success">Yes</span>
+                            </div>
+                            <div class="seller">
+                                <div>
+                                    <b>Id Seller :</b>
+                                    <span>{{userDetail()!.seller?.id}}</span>
+                                </div>
+                                <div>
+                                    <b>Shop Name :</b>
+                                    <span>{{userDetail()!.seller?.shopName}}</span>
+                                </div>
+                                <div>
+                                    <b>Status Seller :</b>
+                                    <span>{{userDetail()!.seller?.status|status}}</span>
+                                </div>
+                            </div>
+                        }@else{
+                            <div>
+                                <b>Is Seller :</b>
+                                <span class="badge bg-secondary">No</span>
+                            </div>
+                        }
+                            
+                    </div>
+                    <div class="mt-5">
+                        <button class="btn btn-danger">Lock</button>
+                    </div>
+                </div>
+            </div>
+        }
+        
+    </div>
+</div>

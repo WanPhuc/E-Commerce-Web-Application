@@ -1,0 +1,60 @@
+.container-admin{
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    .sidebar{
+        height: 100vh;
+        width: 260px;
+        min-width: 260px;
+        background-color: #212529;
+
+        .sidebar-nav{
+            &::-webkit-scrollbar{
+                width: 8px;
+            }
+            &::-webkit-scrollbar-thumb{
+                background-color: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+            }
+
+            .sidebar-item{
+                transition: all 0.3s ease;
+                opacity: 0.8;
+                border-radius: 10px;
+
+                &:hover{
+                    background-color: #2793ff;
+                    color: white;
+                    opacity: 1;
+                }
+                &.active {
+                    background-color: #0b5ed7 !important; // Màu xanh Primary
+                    opacity: 1;
+                    font-weight: 500;
+                }
+            }
+        }
+        .sidebar-footer{
+            .rounded-circle{
+                width: 70px;
+                height: 70px;
+                border-radius: 50%;
+                border:1px solid white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+        }
+    }
+    .main-content{
+        overflow-y: auto;
+        &::-webkit-scrollbar{
+            width: 5px;
+        }
+        &::-webkit-scrollbar-thumb{
+            background: #dee2e6;
+            border-radius: 10px;
+        }
+    }
+}

@@ -1,0 +1,104 @@
+<div class="container-fluid">
+    <h2>Seller manager</h2>
+    <div class="d-flex gap-3 mb-3">
+        <button type="button" class="btn btn-outline-primary" [class.active]="activeTab()==='seller'"(click)="switchTab('seller')">Seller</button>
+        <button class="btn btn-outline-primary position-relative" [class.active]="activeTab()==='application'" (click)="switchTab('application')">Application Seller
+            @if (pendingCount()>0) {
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{pendingCount()>9?'9+':pendingCount()}}</span>
+            }
+        </button>
+    </div>
+    @if (loading()) {
+        <div class="text-center ">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    @if (!loading()&& activeTab()==='seller') {
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-bordered align-middle">
+                    <thead>
+                        <tr class="text-center">
+                            <th style="width: 40px;">#</th>
+                            <th style="width: 220px;">Seller Id</th>
+                            <th style="width: 200px;">Name</th>
+                            <th style="width: 220px;">Email</th>
+                            <th style="width: 140px;">Approved At</th>
+                            <th style="width: 100px;">Status</th>
+                            <th style="width: 160px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (sellers().length>0) {
+                            @for (seller of sellers(); track seller.id;let i= $index) {
+                                <tr>
+                                    <td>{{i+1}}</td>
+                                    <td>{{seller.id}}</td>
+                                    <td>{{seller.storeName}}</td>
+                                    <td>{{seller.email}}</td>
+                                    <td>{{seller.createdAt|date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-success">{{seller.status|status}}</span></td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-secondary me-1"title="Xem chi tiết" [routerLink]="['/admin/seller/seller',seller.id]"><i class="bi bi-eye"></i></button>
+                                        <button class="btn btn-sm btn-danger me-1"title="Khóa tài khoản"><i class="bi bi-lock-fill"></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        }@else {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4"> Chưa có Seller nào .</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    
+    @if (!loading()&& activeTab()==='application') {
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-bordered align-middle">
+                    <thead>
+                        <tr class="text-center">
+                            <th style="width: 40px;">#</th>
+                            <th style="width: 220px;">Seller Id</th>
+                            <th style="width: 200px;">Name</th>
+                            <th style="width: 220px;">Email</th>
+                            <th style="width: 140px;">Approved At</th>
+                            <th style="width: 100px;">Status</th>
+                            <th style="width: 160px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (applications().length>0) {
+                            @for (sellerapp of applications(); track sellerapp.id;let i= $index) {
+                                <tr>
+                                    <td>{{i+1}}</td>
+                                    <td>{{sellerapp.id}}</td>
+                                    <td>{{sellerapp.storeName}}</td>
+                                    <td>{{sellerapp.email}}</td>
+                                    <td>{{sellerapp.createdAt|date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-warning">{{sellerapp.status|status}}</span></td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-secondary me-1" title="Xem chi tiết" [routerLink]="['/admin/seller/application-seller',sellerapp.id]"><i class="bi bi-eye"></i></button>
+                                        <button class="btn btn-sm btn-primary me-1" title="Xác nhận duyệt" (click)="approve(sellerapp.id)"><i class="bi bi-check-circle"></i></button>
+                                        <button class="btn btn-sm btn-danger me-1"title="Từ chối duyệt"(click)="reject(sellerapp.id)"><i class="bi bi-trash"></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        }@else {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4"> Chưa có Seller Applications nào .</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

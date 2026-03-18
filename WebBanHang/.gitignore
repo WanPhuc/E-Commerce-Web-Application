@@ -1,0 +1,17 @@
+## --- Visual Studio & .NET Core ---
+[Bb]in/
+[Oo]bj/
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+
+## --- Cấu hình cá nhân ---
+# Tránh lộ Connection String khi bạn đẩy code lên GitHub/GitLab
+appsettings.Development.json
+
+## --- OS Files ---
+.DS_Store
+Thumbs.db

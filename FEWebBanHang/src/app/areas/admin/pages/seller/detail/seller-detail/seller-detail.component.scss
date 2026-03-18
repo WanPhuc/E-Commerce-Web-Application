@@ -1,0 +1,23 @@
+.container-fluid {
+    padding: 15px;
+
+    .container-card{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .card{
+            padding: 15px;
+            margin-top: 10px;
+            width: 70%;
+            .card-body{
+                .card-detail{
+                    display: flex;
+                    flex-direction: column;
+                    gap: 15px;
+                }
+            }
+        }
+    }
+
+    
+}

@@ -1,0 +1,80 @@
+<div class="container-fluid">
+    <div class="d-flex align-items-center  justify-content-between">
+        <div>
+            <h5>tim kiem</h5>
+            <div class="input-group mb-3"> 
+                <input type="text">
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-primary "[routerLink]="'/create'">Them moi</button>
+        </div>
+    </div>
+    @if (loading()) {
+        <div class="text-center m-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    <div>
+        <h5 class="fw-bold">Danh sach User</h5>
+    </div>
+    @if (!loading()) {
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-bordered align-middle">
+                    <thead>
+                        <tr class="text-center">
+                            <th style="width: 20px;">#</th>
+                            <th style="width: 220px;">User Id</th>
+                            <th style="width: 200px;">Full Name</th>
+                            <th style="width: 220px;">Email</th>
+                            <th style="width: 140px;">Create At</th>
+                            <th style="width: 100px;">Role</th>
+                            <th style="width: 100px;">is Seller</th>
+                            <th style="width: 100px;">is Active</th>
+                            <th style="width: 160px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (users().length>0) {
+                            @for (u of users(); track u.id;let i= $index) {
+                                <tr>
+                                    <td>{{i+1}}</td>
+                                    <td>{{u.id}}</td>
+                                    <td>{{u.fullName}}</td>
+                                    <td>{{u.email}}</td>
+                                    <td>{{u.createdAt|date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info text-dark">{{u.role}}</span></td>
+                                    <td class="text-center">
+                                        @if (u.seller) {
+                                            <span class="badge bg-success">Yes</span>
+                                        }@else {
+                                            <span class="badge bg-secondary">No</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (u.isActive) {
+                                            <span class="badge bg-success">Active</span>
+                                        }@else {
+                                            <span class="badge bg-danger">Inactive</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-secondary me-1"title="Xem chi tiết" [routerLink]="['/admin/user/detail',u.id]"><i class="bi bi-eye"></i></button>
+                                        <button class="btn btn-sm btn-danger me-1"title="Khóa tài khoản"><i class="bi bi-lock-fill"></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    }@else {
+
+    }
+</div>

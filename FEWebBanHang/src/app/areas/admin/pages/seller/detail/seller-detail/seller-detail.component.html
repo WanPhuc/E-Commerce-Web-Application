@@ -1,0 +1,66 @@
+<div class="container-fluid">
+    <button class="btn btn-outline-secondary" [routerLink]="['/admin/seller']">
+      Quay lại
+    </button>
+    @if (loading()) {
+        <div class="text-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    <div class="container-card">
+        @if (!loading()&&  detail()) {
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-center mb-3 gap-3 ">
+                        <h4 class="fw-bold">{{detail()!.storeName}}</h4>
+                        
+                    </div>
+                    <hr>
+                    <div class="card-detail">
+                        <div>
+                            <b>Id :</b>
+                            <span>{{detail()!.id}}</span>
+                        </div>
+                        <div>
+                            <b>Description :</b>
+                            <span>{{detail()!.description}}</span>
+                        </div>
+                        <div class="">
+                            <b>Email :</b>
+                            <span class="text-muted">{{detail()!.email}}</span>
+                            
+                        </div>
+                        <div class="">
+                            <b>Created At : </b>
+                            <span> {{detail()!.createdAt|date:'yyyy-MM-dd HH:mm:ss'}}
+                            </span>
+                        </div>
+                        <div class="">
+                            <b>Status : </b>
+                            <span>{{detail()!.status|status}}</span>
+
+                        </div>
+                        <div class="">
+                            <b>User Id :</b>
+                            <span>{{detail()!.userId}}</span>
+                        </div>
+                        <div class="">
+                            <b>Full Name :</b>
+                            <span>{{detail()!.fullName}}</span>
+                        </div>
+                        <div class="">
+                            <b>Product Count :</b>
+                            <span>{{detail()!.productCount}}</span>
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        <button class="btn btn-danger" title="Lock">Lock</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    
+</div>

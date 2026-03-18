@@ -1,0 +1,54 @@
+<div class="d-flex container-admin overflow-hidden">
+    <aside class="sidebar bg-dark d-flex flex-column text-white ">
+        <div class="sidebar-header text-white py-3">
+            <h4 class="text-center  mb-0">Admin</h4>
+            <div>
+                
+            </div>
+        </div>
+        <nav class="sidebar-nav custom-scrollbar overflow-auto flex-grow-1  text-white p ">     
+            <ul class="nav nav-pills flex-column gap-1 ">
+                <li class="nav-item sidebar-item">
+                    <a class="nav-link  text-white " [routerLink]="'/admin'"><i class="fa-solid fa-house me-2"></i> Home</a>
+                </li>
+                <li class="nav-item sidebar-item">
+                    <a class="nav-link text-white " [routerLink]="'/admin/seller'"><i class="fa-solid fa-store me-2"></i> Seller</a>
+                </li>
+                <li class="nav-item sidebar-item">
+                    <a class="nav-link text-white " [routerLink]="'/admin/user'"><i class="fa-solid fa-users me-2"></i> User</a>
+                </li>
+                <li class="nav-item sidebar-item">
+                    <a class="nav-link text-white " [routerLink]="'/admin/category'"><i class="fa-solid fa-list me-2"></i> Category</a>
+                </li>
+                <!-- <li class="nav-item sidebar-item" >
+                    <a class="nav-link text-white " [routerLink]="'/admin/dashboard'"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+                </li> -->
+                
+            </ul>
+               
+            
+        </nav>
+        <div class="sidebar-footer p-3 border-top border-secondary text-center">
+            <div class="d-flex flex-column align-items-center">
+                <div class="rounded-circle mb-2  ">
+                    <i class="bi bi-person"></i>
+                </div>
+                @if (auth.me$|async; as me) {
+                    <div class="text-white mb-3">
+                        {{me.fullName}}
+                    </div>
+                }
+                <div class="btn btn-danger">
+                    <a (click)="logout()">Logout</a>
+                </div>
+            </div>
+        </div>
+    </aside>
+    
+    <div class="main-content flex-grow-1 bg-light vh-100 ">
+            <main class="container-fluid">
+                <router-outlet></router-outlet>
+                <app-toast></app-toast>
+            </main>
+    </div>
+</div>

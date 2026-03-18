@@ -1,0 +1,53 @@
+.container-signup{
+    background: linear-gradient(to bottom right, #8bb4f7, #c088f5);
+
+    .signup-card{
+        width: 40%;
+        .icon-circle{
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .auth-input{
+            transition: 0.2s;
+
+            .input-group{
+                &:focus-within:not(:has(.is-invalid)){
+                    .form-control{
+                        border-color: #86b7fe;
+                    }
+                    .input-group-text{
+                        border-color: #86b7fe;
+                        background-color: #e7f1ff;
+                    }
+                    .tg-pass{
+                        border-color: #86b7fe;
+                        background-color: #e7f1ff;
+                    }
+                }
+
+                .icon-invalid{
+                    border-color: #dc3545 !important;
+                    color: #dc3545 !important;
+                    background-color: #f8d7da !important;
+                }
+                .tg-pass{
+                    border-color: #dee2e6;
+                }
+
+                &:focus-within:has(.is-invalid){
+                    .input-group-text{
+                        border-right: none;
+                    }
+                    .form-control:focus {
+                    border-color: #dc3545;
+                    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+                    }
+                }
+            }
+        }
+    }
+}

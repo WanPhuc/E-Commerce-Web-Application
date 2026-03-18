@@ -1,0 +1,1 @@
+export type ChartRanger='Week'|'Month'|'Year';

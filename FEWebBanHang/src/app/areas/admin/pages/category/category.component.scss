@@ -1,0 +1,75 @@
+.container-fluid{
+    padding: 20px;
+    width: 100%;
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+
+        h3 {
+            margin: 0;
+        }
+    }
+
+    .tree-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+        .tree-left {
+        display: flex;
+        align-items: flex-start;
+        min-width: 0;
+        gap: 8px;
+        }
+
+        .tree-title {
+        min-width: 0;
+
+        .fw-semibold {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        }
+
+        .tree-meta {
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        }
+
+        .tree-actions {
+        flex-shrink: 0;
+        }
+
+        .tree-toggle {
+        text-decoration: none;
+        color: inherit;
+        }
+
+        .chev {
+        display: inline-block;
+        transition: transform 0.15s ease;
+        transform: rotate(0deg);
+        font-size: 14px;
+        line-height: 1;
+        }
+        .chev.open {
+        transform: rotate(90deg);
+        }
+
+        .tree-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #e9ecef;
+        display: inline-block;
+        }
+
+}

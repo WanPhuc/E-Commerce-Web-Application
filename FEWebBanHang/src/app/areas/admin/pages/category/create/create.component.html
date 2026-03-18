@@ -1,0 +1,53 @@
+<div class="container-fluid">
+    <div class="text-center mb-4">
+        <h3>Create new category</h3>
+    </div>
+    @if (loading()) {
+        <div class="text-center py-4">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }@else {
+        <div class="card">
+            <div class="card-body">
+                <form (ngSubmit)="submit()"[formGroup]="form" novalidate>
+                    <div class="field">
+                        <label class="form-label">Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" formControlName="name" [class.is-invalid]="form.controls.name.touched && form.controls.name.invalid">
+                        @if (form.controls.name.touched&& form.controls.name.invalid) {
+                            <div class="invalid-feedback d-block">
+                                <span *ngIf="form.controls.name.errors?.['required']">Name is required.</span>
+                                <span *ngIf="form.controls.name.errors?.['maxlength']">Name must be at least 3 characters.</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="field">
+                        <label class="form-label">Parent</label>
+                        <select class="form-select" formControlName="parentId">
+                            <option [ngValue]="null">— Root (no parent) —</option>
+                            @for (otp of parentOptions(); track otp.id) {
+                                <option [ngValue]="otp.id">
+                                    {{'-'.repeat(otp.level)}}{{otp.label}}
+                                </option>
+                            }
+                        </select>
+                        <div class="form-text">
+                            Choose a parent to create a subcategory. Leave empty to create a root category.
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button type="submit" class="btn btn-primary" [disabled]="submiting()">
+                            @if (submiting()) {
+                                Creating...
+                            }@else {
+                                Create
+                            }
+                        </button>
+                        <button type="button" class="btn btn-secondary" [routerLink]="['/admin/category']">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+</div>

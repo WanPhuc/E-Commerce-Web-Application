@@ -1,0 +1,20 @@
+.layout {
+    margin: 0;
+    padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout__header {
+  flex: 0 0 auto;
+}
+
+.layout__main {
+  flex: 1 1 auto;
+  min-height: 0; // tránh overflow lỗi khi dùng flex
+}
+
+.layout__footer {
+  flex: 0 0 auto;
+}

@@ -1,0 +1,168 @@
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h3 class="mb-0">Category Tree</h3>
+      <small class="text-muted">Manage parent / children categories</small>
+    </div>
+
+    <button class="btn btn-primary" [routerLink]="'/admin/category/create'">
+      <i class="bi bi-plus-lg me-1"></i>
+      New root
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border" role="status"></div>
+    </div>
+  } @else {
+    @if (category().length === 0) {
+      <div class="alert alert-info mb-0" role="alert">
+        No categories found.
+      </div>
+    } @else {
+      <div class="card">
+        <div class="card-body p-0">
+          <ul class="list-group list-group-flush">
+            @for (c of category(); track c.id) {
+              <ng-container
+                [ngTemplateOutlet]="nodeTpl"
+                [ngTemplateOutletContext]="{ $implicit: c, level: 0 }">
+              </ng-container>
+            }
+          </ul>
+        </div>
+      </div>
+
+      <ng-template #nodeTpl let-node let-level="level">
+        <li class="list-group-item tree-row">
+          <div class="tree-left" [style.paddingLeft.px]="level * 18">
+            <!-- toggle / dot -->
+            @if (node.children?.length) {
+              <button
+                type="button"
+                class="btn btn-sm btn-link p-0 me-2 tree-toggle"
+                (click)="toogle(node.id)">
+                <span class="chev" [class.open]="isOpen(node.id)">▸</span>
+              </button>
+            } @else {
+              <span class="tree-dot me-2"></span>
+            }
+
+            <div class="tree-title">
+              <div class="fw-semibold">{{ node.name }}</div>
+              <div class="tree-meta text-muted">
+                @if (node.children?.length) {
+                  <span class="badge text-bg-secondary me-2">
+                    {{ node.children.length }} children
+                  </span>
+                }
+                <span class="text-muted">id: {{ node.id }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tree-actions btn-group">
+            <button
+              class="btn btn-sm btn-outline-primary"
+              [routerLink]="['/admin/category/create']"
+              [queryParams]="{ parentId: node.id }">
+              + Child
+            </button>
+
+            <button
+              class="btn btn-sm btn-outline-warning"
+              (click)="openEdit(node)">
+              Edit
+            </button>
+
+            <button
+              class="btn btn-sm btn-outline-danger"
+              [disabled]="node.children?.length > 0"
+              (click)="openDelete(node)">
+              Delete
+            </button>
+          </div>
+        </li>
+
+        <!-- children: chỉ render khi open -->
+        @if (node.children?.length && isOpen(node.id)) {
+          @for (child of node.children; track child.id) {
+            <ng-container
+              [ngTemplateOutlet]="nodeTpl"
+              [ngTemplateOutletContext]="{ $implicit: child, level: level + 1 }">
+            </ng-container>
+          }
+        }
+      </ng-template>
+    }
+  }
+</div>
+@if (editOpen()) {
+  <div class="modal-backdrop fade show"></div>
+  <div class="modal fade show d-block" tabindex="-1"(click)="closeEdit()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit category</h5>
+          <button type="button" class="btn-close" (click)="closeEdit()"></button>
+        </div>
+        <form [formGroup]="editForm" (ngSubmit)="saveEdit()" novalidate>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="name" [class.is-invalid]="editForm.controls.name.touched&&editForm.controls.name.invalid"/>
+              @if (editForm.controls.name.touched&&editForm.controls.name.invalid) {
+                <div class="invalid-feedback d-block">
+                  <span *ngIf="editForm.controls.name.errors?.['required']">Name is required</span>  
+                  <span *ngIf="editForm.controls.name.errors?.['maxlength']">Name must be at least 3 characters</span >
+                  </div>
+              }
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Parent </label>
+              <select class="form-select" formControlName="parentId">
+                <option [ngValue]="null">— Root (no parent) —</option>
+                @for (opt of parentOptions(); track opt.id) {
+                  <option [ngValue]="opt.id" [disabled]="isParentOptionDisables(opt.id)">{{'-'.repeat(opt.level)}} {{opt.label}}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" (click)="closeEdit()">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="saving()">
+              @if (saving()) {Saving...}@else {Save}
+            </button>  
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+@if (deleteOpen()) {
+  <div class="modal-backdrop fade show"></div>
+  <div class="modal fade show d-block" tabindex="-1" (click)="closeDelete()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete category</h5>
+          <button type="button" class="btn-close" (click)="closeDelete()"></button>
+        </div>
+        <div class="modal-body">
+          <p >Are you sure you want to delete this category? <strong>{{deletingName()}}</strong></p>
+          <div class="text-muted small mt-2">
+            Deleting a category is permanent and cannot be undone. 
+            You can only delete categories that do not have any child categories.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeDelete()">Cancel</button>
+          <button type="submit" class="btn btn-danger" (click)="confirmDelete()">
+            @if (deletingBusy()) {Deleting...}@else {Delete}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
