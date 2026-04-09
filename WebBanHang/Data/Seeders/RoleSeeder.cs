@@ -1,6 +1,6 @@
 using WebBanHang.Models.Enums;
 using WebBanHang.Data;
-using WebBanHang.Models;
+using WebBanHang.Models.EntityModels;
 namespace WebBanHang.Data.Seeders;
 
 public static class RoleSeeder
@@ -19,7 +19,7 @@ public static class RoleSeeder
             },
             new Role
             {
-                Name = "User",
+                Name = "Customer",
                 Description ="Nguoi dung thuong",
                 Permissions = UserPermission.User
             },

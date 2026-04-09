@@ -4,8 +4,8 @@ using WebBanHang.Models.Common;
 using WebBanHang.Models.DTOs.Sellers;
 using WebBanHang.Services.Seller.Interfaces;
 using System.Security.Claims;
-using WebBanHang.Repositories;
 using WebBanHang.Models.Enums;
+using WebBanHang.Repositories.Interfaces;
 
 namespace WebBanHang.Controllers.Api.Seller;
 [ApiController]

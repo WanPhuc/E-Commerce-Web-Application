@@ -14,7 +14,7 @@ public interface IProductSellerService
 
     //Product Image
     Task<ProductImageDto> AddProductImageAsync(Guid userId,Guid productId,ProductImageCreateDto dto);
-    Task<ProductImageDto> UpdateProductImageAsync(Guid userId,Guid productId,Guid imageId,ProductImageUpdateDto dto);
+    Task<ProductImageDto> UpdateProductImageAsync(Guid userId,Guid productId,Guid imageId,ProductImageCreateDto dto);
     Task DeleteProductImageAsync(Guid userId,Guid productId,Guid imageId);
     Task SetMainProductImageAsync(Guid userId,Guid productId,Guid imageId);
 }

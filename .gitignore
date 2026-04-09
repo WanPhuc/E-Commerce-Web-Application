@@ -1,0 +1,10 @@
+## --- Backend (WebBanHang) ---
+WebBanHang/appsettings.json
+WebBanHang/appsettings.Development.json
+WebBanHang/bin/
+WebBanHang/obj/
+
+## --- Frontend (FEWebBanHang) ---
+FEWebBanHang/node_modules/
+FEWebBanHang/dist/
+FEWebBanHang/.env

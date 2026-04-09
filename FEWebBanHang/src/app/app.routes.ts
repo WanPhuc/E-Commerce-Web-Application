@@ -10,5 +10,8 @@ export const routes: Routes = [
     },
     {path:'admin',canActivate:[roleGuard(['Admin'])],
         loadChildren:()=>import('./areas/admin/admin.routes').then(m=>m.adminRoutes)
+    },
+    {path:'seller',canActivate:[roleGuard(['Seller'])],
+        loadChildren:()=>import('./areas/seller/seller.routes').then(m=>m.sellerRoutes)
     }
 ];

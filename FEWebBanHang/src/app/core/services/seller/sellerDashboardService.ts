@@ -1,3 +1,4 @@
+import { environment } from './../../../../environments/environment';
 import { ApiResponse } from './../../../shared/types/ApiResponse';
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
@@ -6,7 +7,7 @@ import { SellerDashboardChartDto, SellerDashboardDto } from "../../models/seller
 
 @Injectable({providedIn:'root'})
 export class SellerDashboardService{
-    private baseUrl = 'http://localhost:5144/api/v1/rseller/dashboard';
+    private baseUrl = `${environment.apiUrl}/rseller/dashboard`;
     private http = inject(HttpClient);
 
     getDashboardStats():Observable<SellerDashboardDto>{
@@ -15,7 +16,7 @@ export class SellerDashboardService{
         );
     }
     getChart(ranger:string):Observable<SellerDashboardChartDto>{
-        return this.http.get<ApiResponse<SellerDashboardChartDto>>(`${this.baseUrl}/chart?ranger=${ranger}`).pipe(
+        return this.http.get<ApiResponse<SellerDashboardChartDto>>(`${this.baseUrl}/chartdashboard?ranger=${ranger}`).pipe(
             map(res=>res.data)
         );
     }

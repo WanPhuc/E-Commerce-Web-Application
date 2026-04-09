@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using WebBanHang.Data;
 using WebBanHang.Helpers.Product;
-using WebBanHang.Models;
 using WebBanHang.Models.DTOs.Seller.Product;
 using WebBanHang.Models.DTOs.Seller.ProductImage;
 using WebBanHang.Models.DTOs.Sellers.Product;
-using WebBanHang.Repositories;
+using WebBanHang.Models.EntityModels;
+using WebBanHang.Repositories.Interfaces;
 using WebBanHang.Services.Interfaces;
 
 namespace WebBanHang.Services.Seller.Implementations;
@@ -42,6 +42,7 @@ public class ProductSellerService : IProductSellerService
             SKU = p.SKU,
             Price = p.Price,
             Stock = p.Stock,
+            LowStockThreshold = p.LowStockThreshold,
             Status = p.Status,
             DiscountPercent = p.DiscountPercent,
             Rating = p.Reviews.Any()? p.Reviews.Average(r => (double?)r.Rating) ?? 0 : 0,
@@ -68,6 +69,7 @@ public class ProductSellerService : IProductSellerService
             SKU = productid.SKU,
             Price = productid.Price,
             Stock = productid.Stock,
+            LowStockThreshold = productid.LowStockThreshold,
             Status = productid.Status,
             DiscountPercent = productid.DiscountPercent,
             Rating = productid.Reviews.Any() ? productid.Reviews.Average(r => (double?)r.Rating) ?? 0 : 0,
@@ -131,6 +133,7 @@ public class ProductSellerService : IProductSellerService
             SKU=createSellerProductDto.SKU,
             Price=createSellerProductDto.Price,
             Stock=createSellerProductDto.Stock,
+            LowStockThreshold=createSellerProductDto.LowStockThreshold,
             Status=createSellerProductDto.Status,
             DiscountPercent=createSellerProductDto.DiscountPercent,
             CategoryId=createSellerProductDto.CategoryId,
@@ -150,6 +153,7 @@ public class ProductSellerService : IProductSellerService
             SKU=product.SKU,
             Price=product.Price,
             Stock=product.Stock,
+            LowStockThreshold=product.LowStockThreshold,
             Status=product.Status,
             DiscountPercent=product.DiscountPercent,
             Rating=0,
@@ -187,6 +191,7 @@ public class ProductSellerService : IProductSellerService
         product.SKU=dto.SKU;
         product.Price=dto.Price;
         product.Stock=dto.Stock;
+        product.LowStockThreshold=dto.LowStockThreshold;
         product.Status=dto.Status;
         product.DiscountPercent=dto.DiscountPercent;
         product.CategoryId=dto.CategoryId;
@@ -202,6 +207,7 @@ public class ProductSellerService : IProductSellerService
             SKU=product.SKU,
             Price=product.Price,
             Stock=product.Stock,
+            LowStockThreshold=product.LowStockThreshold,
             Status=product.Status,
             DiscountPercent=product.DiscountPercent,
             Rating=product.Reviews.Any() ? product.Reviews.Average(r => (double?)r.Rating) ?? 0 : 0,
@@ -293,7 +299,7 @@ public class ProductSellerService : IProductSellerService
         };
         
     }
-    public async Task<ProductImageDto> UpdateProductImageAsync(Guid userId,Guid productId,Guid imageId,ProductImageUpdateDto dto)
+    public async Task<ProductImageDto> UpdateProductImageAsync(Guid userId,Guid productId,Guid imageId,ProductImageCreateDto dto)
     {
         _fileHelper.ValidateImageUrl(dto.ImageUrl);
         var sellerid=await _sellerRepository.GetSellerByUserIdAsync(userId);

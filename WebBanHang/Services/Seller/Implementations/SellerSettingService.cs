@@ -1,5 +1,5 @@
 using WebBanHang.Models.DTOs.Seller.Setting;
-using WebBanHang.Repositories;
+using WebBanHang.Repositories.Interfaces;
 using WebBanHang.Services.Seller.Interfaces;
 
 namespace WebBanHang.Services.Seller.Implementations;

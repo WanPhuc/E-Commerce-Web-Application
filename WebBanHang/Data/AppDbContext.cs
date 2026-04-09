@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using WebBanHang.Models;
+using WebBanHang.Models.EntityModels;
 
 namespace WebBanHang.Data;
 public partial class AppDbContext : DbContext
@@ -19,6 +19,7 @@ public partial class AppDbContext : DbContext
     public DbSet<Seller> Sellers { get; set; }
     public DbSet<SellerApplication> SellerApplications { get; set; }
     public DbSet<Notification> Notifications { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options)   : base(options)
     {

@@ -8,7 +8,7 @@ using WebBanHang.Helpers;
 using WebBanHang.Models;
 using WebBanHang.Models.Common;
 using WebBanHang.Models.DTOs.Auth;
-using WebBanHang.Models.ViewModels;
+using WebBanHang.Models.EntityModels;
 
 namespace WebBanHang.Controllers.Api;
 
@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("signin")]
-    public async Task<ActionResult<ApiResponse<MeDto>>> SignIn([FromBody] LoginViewModel viewModel)
+    public async Task<ActionResult<ApiResponse<MeDto>>> SignIn([FromBody] SignInDto viewModel)
     {
         if (!ModelState.IsValid)
         {
@@ -67,7 +67,7 @@ public class AuthController : ControllerBase
         );
 
         var me = new MeDto
-        {
+        {   
             Id = user.Id.ToString(),
             FullName = user.FullName,
             Email = user.Email,

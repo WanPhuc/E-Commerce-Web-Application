@@ -1,3 +1,4 @@
+import { environment } from './../../../../environments/environment';
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { map, Observable } from "rxjs";
@@ -6,7 +7,7 @@ import { ApiResponse } from "../../../shared/types/ApiResponse";
 
 @Injectable({providedIn: 'root'})
 export class CategoryService {
-    private baseUrl = 'http://localhost:5144/api/v1/admin/categories';
+    private baseUrl = `${environment.apiUrl}/admin/categories`;
     private http = inject(HttpClient);
 
     getAllCategories():Observable<CategoryDto[]>{

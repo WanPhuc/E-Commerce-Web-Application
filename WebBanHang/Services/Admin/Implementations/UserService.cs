@@ -4,6 +4,7 @@ using WebBanHang.Migrations;
 using WebBanHang.Models;
 using WebBanHang.Models.DTOs.Sellers;
 using WebBanHang.Models.DTOs.Users;
+using WebBanHang.Models.EntityModels;
 using WebBanHang.Repositories;
 using WebBanHang.Services.Interfaces;
 
@@ -19,7 +20,7 @@ public class UserService : IUserService
     }
     public async Task<List<UserDto>> GetAllUserAsync()
     {
-        var users = await _userRepository.GetAllUserAsync();
+        var users = await _userRepository.GetAllAsync(trackChanges:true);
         if(users == null)
         {
             throw new KeyNotFoundException("No users found.");
@@ -45,7 +46,7 @@ public class UserService : IUserService
     }
     public async Task<UserDto> GetUserByIdAsync(Guid userId)
     {
-        var user = await _userRepository.GetByIdWithRoleSellerAsync(userId);
+        var user = await _userRepository.GetByIdAsync(userId);
         if (user == null)
         {
             throw new KeyNotFoundException("User not found.");
@@ -69,7 +70,7 @@ public class UserService : IUserService
     }
     public async Task<UserDto> CreateUserAsync(CreateuserDto createuserDto)
     {
-        var emailExists = await _userRepository.ExistsByEmailAsync(createuserDto.Email);
+        var emailExists = await _userRepository.AnyByConditionAsync(e=>e.Email==createuserDto.Email);
         if (emailExists)
         {
             throw new InvalidOperationException("Email already in use.");
@@ -91,8 +92,7 @@ public class UserService : IUserService
             RoleId=role.Id,
 
         };
-        await _userRepository.AddAsync(user);
-        await _userRepository.SaveChangesAsync();
+        await _userRepository.CreateAsync(user);
 
         return new UserDto
         {

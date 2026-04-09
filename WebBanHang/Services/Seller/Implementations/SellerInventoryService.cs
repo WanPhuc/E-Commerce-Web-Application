@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebBanHang.Models.DTOs.Seller.Inventory;
-using WebBanHang.Repositories;
+using WebBanHang.Repositories.Interfaces;
 using WebBanHang.Services.Seller.Interfaces;
 
 namespace WebBanHang.Services.Seller.Implementations;

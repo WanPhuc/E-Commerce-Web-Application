@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebBanHang.Models.Common;
 using WebBanHang.Models.DTOs.Sellers.Revenue;
 using WebBanHang.Models.Enums;
-using WebBanHang.Repositories;
+using WebBanHang.Repositories.Interfaces;
 using WebBanHang.Services.Seller.Interfaces;
 
 namespace WebBanHang.Controllers.Api.Seller;

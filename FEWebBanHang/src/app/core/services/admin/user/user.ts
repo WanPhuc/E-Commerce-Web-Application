@@ -1,3 +1,4 @@
+import { environment } from './../../../../../environments/environment';
 import { CreateUserDto } from '../../../models/admin/user.model';
 import { ApiResponse } from '../../../../shared/types/ApiResponse';
 import { HttpClient } from "@angular/common/http";
@@ -8,7 +9,7 @@ import { UserDto } from "../../../models/admin/user.model";
 @Injectable({providedIn: 'root'})
 export class UserService {
     private http = inject(HttpClient);
-    private baseUrl = 'http://localhost:5144/api/v1/admin/users';
+    private baseUrl = `${environment.apiUrl}/admin/users`;
 
     getAllUsers():Observable<UserDto[]>{
         return this.http.get<ApiResponse<UserDto[]>>(this.baseUrl).pipe(map (res=>res.data));

@@ -61,6 +61,7 @@ export class SigninComponent {
     next: () => {
       const me = this.auth.me;
       if (me?.role === 'Admin') this.router.navigate(['/admin']);
+      else if(me?.role ==='Seller') this.router.navigate(['/seller']);
       else this.router.navigate(['/']);
     },
     error: (err) => {

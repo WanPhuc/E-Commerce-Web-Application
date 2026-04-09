@@ -22,10 +22,15 @@ public static class ApiPermissionResolver
         if (route is null || !route.StartsWith("api/"))
             return false;
 
-        // Tách segments: api/{scope}/{resource}/...
-        // vd: api/admin/orders/{id}
+        // Tách segments: api/v1/{scope}/{resource}/...
+        // vd: api/v1/admin/orders/{id}
         var seg = route.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        if (seg.Length < 3) return false;
+        int index = 1;
+        if(seg.Length > 1 && seg[1].StartsWith("v") && char.IsDigit(seg[1].Length>1 ? seg[1][1] : ' '))
+        {
+            index = 2;
+        }
+        if(seg.Length < index) return false;
 
         var scope = seg[1];     // admin | seller | user | public...
         var resource = seg[2];  // orders | products | categories ...

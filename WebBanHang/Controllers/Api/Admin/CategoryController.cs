@@ -17,7 +17,7 @@ public class CategoryController  : ControllerBase
     public async Task<ActionResult<ApiResponse<List<CategoryDto>>>> GetAllCategories(CancellationToken ct = default)
     {
         var categories = await _categoryService.GetAllCategoriesAsync(ct);
-        return Ok(ApiResponse<List<CategoryDto>>.Ok(categories));
+        return Ok(ApiResponse<List<CategoryDto>>.Success(categories));
     }
     [HttpGet("detail/{id:guid}")]
     public  async Task<ActionResult<ApiResponse<CategoryDto?>>> GetCategoryById(Guid id,CancellationToken ct = default)
@@ -25,7 +25,7 @@ public class CategoryController  : ControllerBase
         try
         {
             var category =await _categoryService.GetCategoryByIdAsync(id,ct);
-            return Ok(ApiResponse<CategoryDto?>.Ok(category));
+            return Ok(ApiResponse<CategoryDto?>.Success(category));
         }
         catch (KeyNotFoundException ex)
         {
@@ -42,7 +42,7 @@ public class CategoryController  : ControllerBase
         try
         {
             var category = await _categoryService.CreateCategoryAsync(dto,ct);
-            return Ok(ApiResponse<CategoryDto>.Ok(category,"Category created successfully"));
+            return Ok(ApiResponse<CategoryDto>.Success(category,"Category created successfully"));
         }
         catch(KeyNotFoundException ex)
         {
@@ -63,7 +63,7 @@ public class CategoryController  : ControllerBase
         try
         {
             var category = await _categoryService.UpdateCategoryAsync(id, dto,ct);
-            return Ok(ApiResponse<CategoryDto?>.Ok(category,"Category updated successfully"));
+            return Ok(ApiResponse<CategoryDto?>.Success(category,"Category updated successfully"));
         }catch(KeyNotFoundException ex)
         {
             return NotFound(ApiResponse<CategoryDto?>.Fail(ex.Message, 404));
@@ -83,7 +83,7 @@ public class CategoryController  : ControllerBase
         try
         {
             var result = await _categoryService.DeleteCategoryAsync(id,ct);
-            return Ok(ApiResponse<bool>.Ok(result,"Category deleted successfully"));
+            return Ok(ApiResponse<bool>.Success(result,"Category deleted successfully"));
         }
         catch (KeyNotFoundException ex)
         {

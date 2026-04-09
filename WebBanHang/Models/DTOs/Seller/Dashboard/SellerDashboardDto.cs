@@ -1,6 +1,7 @@
 using WebBanHang.Models.Enums;
 
 namespace WebBanHang.Models.DTOs.Sellers;
+
 public class SellerDashboardDto
 {
     public int TotalProducts { get; set; }
@@ -19,18 +20,21 @@ public class SellerDashboardDto
     public List<OrdersProcessDashboardDto> OrdersProcess { get; set; } = new List<OrdersProcessDashboardDto>();
     public List<ErrorInventoryDashboardDto> ErrorInventory { get; set; } = new List<ErrorInventoryDashboardDto>();
     public List<RecentRatingDashboardDto> RecentRatings { get; set; } = new List<RecentRatingDashboardDto>();
-}   
+}
 public class TopSellingProductDashboardDto
 {
+    public Guid ProductId { get; set; }
     public string ProductName { get; set; } = "";
     public int QuantitySold { get; set; }
     public decimal TotalRevenue { get; set; }
+    public string? ImageUrl { get; set; } = default!;
+    public string SKU { get; set; } = default!;
 }
 public class OrdersProcessDashboardDto
 {
     public Guid OrderId { get; set; }
     public DateTime OrderDate { get; set; }
-    public string CustumerName { get; set; } = default!;
+    public string CustomerName { get; set; } = default!;
     public decimal TotalAmount { get; set; }
     public OrderStatus Status { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
@@ -40,12 +44,17 @@ public class ErrorInventoryDashboardDto
     public Guid ProductId { get; set; }
     public string ProductName { get; set; } = default!;
     public int StockQuantity { get; set; }
-    
+    public string SKU { get; set; } = default!;
+
 }
 public class RecentRatingDashboardDto
 {
+    public Guid ReviewId { get; set; }
     public Guid ProductId { get; set; }
     public string ProductName { get; set; } = default!;
+    public string CustomerName { get; set; } = default!;
+    public string SKU { get; set; } = default!;
+    public string? ImageUrl { get; set; }
     public double Rating { get; set; }
     public string Comment { get; set; } = default!;
     public DateTime ReviewDate { get; set; }

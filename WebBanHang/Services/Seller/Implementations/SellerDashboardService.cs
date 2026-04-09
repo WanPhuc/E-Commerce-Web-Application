@@ -49,24 +49,28 @@ public class SellerDashboardService : ISellerDashboardService
 
         var topSellingProducts = await _db.OrderItems.AsNoTracking()
             .Where(oi => oi.Order.SellerId == sellerId && oi.Order.PaidAt != null && oi.Order.CompletedAt != null && oi.Order.Status == OrderStatus.Completed)
-            .GroupBy(oi => oi.Product)
+            .GroupBy(oi => new { oi.ProductId, oi.Product.Name, oi.Product.SKU })
             .Select(g => new TopSellingProductDashboardDto
             {
+                ProductId = g.Key.ProductId,
                 ProductName = g.Key.Name,
                 QuantitySold = g.Sum(oi => oi.Quantity),
-                TotalRevenue = g.Sum(oi => oi.Quantity * oi.Price)
+                TotalRevenue = g.Sum(oi => oi.Quantity * oi.Price),
+                ImageUrl = _db.ProductImages.Where(p => p.ProductId == g.Key.ProductId).OrderByDescending(p => p.IsMainImage).Select(p => p.ImageUrl).FirstOrDefault(),
+                SKU = g.Key.SKU
             })
             .OrderByDescending(p => p.QuantitySold)
-            .Take(5)
+            .Take(6)
             .ToListAsync(ct);
 
         var ordersProcess = await _db.Orders.AsNoTracking()
-            .Where(o => o.SellerId == sellerId && (o.Status == OrderStatus.Pending || o.Status == OrderStatus.Processing))
+            .Where(o => o.SellerId == sellerId && (o.Status == OrderStatus.Pending || o.Status == OrderStatus.Processing|| o.Status==OrderStatus.Paid))
+            .OrderByDescending(o=>o.CreatedAt)
             .Select(o => new OrdersProcessDashboardDto
             {
                 OrderId = o.Id,
                 OrderDate = o.CreatedAt,
-                CustumerName = o.User.FullName,
+                CustomerName = o.User.FullName,
                 TotalAmount = o.TotalAmount,
                 Status = o.Status,
                 PaymentStatus = o.Payment != null ? o.Payment.Status : PaymentStatus.Pending
@@ -82,7 +86,8 @@ public class SellerDashboardService : ISellerDashboardService
             {
                 ProductId = p.Id,
                 ProductName = p.Name,
-                StockQuantity = p.Stock
+                StockQuantity = p.Stock,
+                SKU = p.SKU
             })
             .Take(5)
             .ToListAsync(ct);
@@ -92,8 +97,12 @@ public class SellerDashboardService : ISellerDashboardService
             .OrderByDescending(r => r.CreatedAt)
             .Select(r => new RecentRatingDashboardDto
             {
+                ReviewId = r.Id,
                 ProductId = r.ProductId,
                 ProductName = r.Product.Name,
+                CustomerName = r.User.FullName,
+                SKU = r.Product.SKU,
+                ImageUrl = _db.ProductImages.Where(p => p.ProductId == r.ProductId).OrderByDescending(p => p.IsMainImage).Select(p => p.ImageUrl).FirstOrDefault(),
                 Rating = r.Rating,
                 Comment = r.Comment ?? "",
                 ReviewDate = r.CreatedAt
@@ -122,81 +131,78 @@ public class SellerDashboardService : ISellerDashboardService
         };
 
     }
-    public async Task<SellerDashboardChartDto> GetSellerDashboardChartAsync(Guid sellerId,ChartRanger ranger,CancellationToken ct = default)
+    public async Task<SellerDashboardChartDto> GetSellerDashboardChartAsync(Guid sellerId, ChartRanger ranger, CancellationToken ct = default)
     {
         var now = DateTime.UtcNow;
-        var DataPoints= new List<SellerDashboardChartPointDto>();
+        var dataPoints = new List<SellerDashboardChartPointDto>();
 
         DateTime start;
         DateTime end = now.Date.AddDays(1);
 
-        if(ranger == ChartRanger.Week)
-        {
+        if (ranger == ChartRanger.Week)
             start = now.Date.AddDays(-6);
-        }
-        else if(ranger == ChartRanger.Month)
-        {
-            start = new DateTime(now.Year,now.Month,1);
-        }
-        else if(ranger == ChartRanger.Year)
-        {
-            start = new DateTime(now.Year,1,1);
-        }
+        else if (ranger == ChartRanger.Month)
+            start = new DateTime(now.Year, now.Month, 1);
+        else if (ranger == ChartRanger.Year)
+            start = new DateTime(now.Year, 1, 1);
         else
-        {
             start = now.Date.AddDays(-6);
-        }
 
-        var baseOrders = await _db.Orders.AsNoTracking().Where(o=>o.SellerId==sellerId && o.PaidAt!=null &&o.CompletedAt!=null && o.Status == OrderStatus.Completed && o.CompletedAt < start).ToListAsync(ct);
-        var baseRevenue = await _db.Orders.AsNoTracking().Where(o=>o.SellerId==sellerId && o.PaidAt!=null &&o.CompletedAt!=null&&o.Status ==OrderStatus.Completed&& o.CompletedAt<start).SumAsync(o=>(decimal?)o.TotalAmount,ct)??0m;
-
-        var dailyOrders=await _db.Orders.AsNoTracking().Where(o=>o.SellerId==sellerId&& o.PaidAt!=null && o.CompletedAt!=null &&o.Status==OrderStatus.Completed&&o.CompletedAt>=start&&o.CompletedAt<end).GroupBy(o=>o.CompletedAt!.Value.Date).Select(g=>new{date=g.Key,value=g.Count()}).ToListAsync(ct);
-        var dailyRevenue= await _db.Orders.AsNoTracking().Where(o=>o.SellerId==sellerId&& o.PaidAt!=null&&o.CompletedAt!=null&&o.Status==OrderStatus.Completed&&o.CompletedAt>=start&&o.CompletedAt<end).GroupBy(o=>o.CompletedAt!.Value.Date).Select(g=>new{date=g.Key,value=g.Sum(o=>(decimal?)o.TotalAmount)??0m}).ToListAsync(ct);
-
-        int runO = 0;
-        decimal runR = 0;
-
-        if(ranger == ChartRanger.Year)
-        {
-            var oDict = dailyOrders.GroupBy(r=>r.date.Month).ToDictionary(g=>g.Key,g=>g.Sum(r=>r.value));
-            var rDict = dailyRevenue.GroupBy(r=>r.date.Month).ToDictionary(g=>g.Key,g=>g.Sum(r=>r.value));
-
-            for(int m = 1; m <= now.Month; m++)
+        var daily = await _db.Orders.AsNoTracking()
+            .Where(o => o.SellerId == sellerId
+                    && o.PaidAt != null
+                    && o.CompletedAt != null
+                    && o.Status == OrderStatus.Completed
+                    && o.CompletedAt >= start
+                    && o.CompletedAt < end)
+            .GroupBy(o => o.CompletedAt!.Value.Date)
+            .Select(g => new
             {
-                runO+= oDict.GetValueOrDefault(m);
-                runR+= rDict.GetValueOrDefault(m);
+                date = g.Key,
+                orders = g.Count(),
+                revenue = g.Sum(o => (decimal?)o.TotalAmount) ?? 0m
+            })
+            .ToListAsync(ct);
 
-                DataPoints.Add(new SellerDashboardChartPointDto
+        if (ranger == ChartRanger.Year)
+        {
+            // Group theo tháng, mỗi điểm = data của tháng đó
+            var oDict = daily.GroupBy(r => r.date.Month)
+                            .ToDictionary(g => g.Key, g => g.Sum(r => r.orders));
+            var rDict = daily.GroupBy(r => r.date.Month)
+                            .ToDictionary(g => g.Key, g => g.Sum(r => r.revenue));
+
+            for (int m = 1; m <= now.Month; m++)
+            {
+                dataPoints.Add(new SellerDashboardChartPointDto
                 {
                     Label = $"Tháng {m}",
-                    Orders = runO,
-                    Revenue = runR
+                    Orders = oDict.GetValueOrDefault(m),    // chỉ tháng đó
+                    Revenue = rDict.GetValueOrDefault(m)    // chỉ tháng đó
                 });
             }
         }
         else
         {
-            var oDict = dailyOrders.ToDictionary(r=>r.date,r=>r.value);
-            var rDict = dailyRevenue.ToDictionary(r=>r.date,r=>r.value);
-            
-            for(var date = start; date <= now.Date; date = date.AddDays(1))
-            {
-                runO+= oDict.GetValueOrDefault(date);
-                runR+= rDict.GetValueOrDefault(date);
+            // Week / Month: mỗi điểm = data của ngày đó
+            var oDict = daily.ToDictionary(r => r.date, r => r.orders);
+            var rDict = daily.ToDictionary(r => r.date, r => r.revenue);
 
-                DataPoints.Add(new SellerDashboardChartPointDto
+            for (var date = start; date <= now.Date; date = date.AddDays(1))
+            {
+                dataPoints.Add(new SellerDashboardChartPointDto
                 {
                     Label = date.ToString("dd/MM"),
-                    Orders = runO,
-                    Revenue = runR
+                    Orders = oDict.GetValueOrDefault(date),   // chỉ ngày đó
+                    Revenue = rDict.GetValueOrDefault(date)   // chỉ ngày đó
                 });
             }
         }
+
         return new SellerDashboardChartDto
         {
             Ranger = ranger,
-            Points = DataPoints
+            Points = dataPoints
         };
-
     }
 }

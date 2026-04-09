@@ -1,3 +1,4 @@
+import { environment } from './../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, map, of, switchMap, tap } from 'rxjs';
@@ -17,7 +18,7 @@ export interface ApiResponse<T> {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private baseUrl = 'http://localhost:5144/api/v1/auth';
+  private baseUrl = `${environment.apiUrl}/auth`;
   private _me$ = new BehaviorSubject<MeDto | null>(null);
   me$ = this._me$.asObservable();
 

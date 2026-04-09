@@ -1,3 +1,4 @@
+import { environment } from './../../../../../environments/environment';
 import { ApiResponse } from '../../../../shared/types/ApiResponse';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
@@ -7,7 +8,7 @@ import { SellerDetailDto, SellerManagementResponse } from '../../../models/admin
 
 @Injectable({ providedIn: 'root' })
 export class SellerService {
-  private baseUrl = 'http://localhost:5144/api/v1/admin/sellers';
+  private baseUrl = `${environment.apiUrl}/admin/sellers`;
   private http = inject(HttpClient);
 
   getSellerManagement(): Observable<SellerManagementResponse> {

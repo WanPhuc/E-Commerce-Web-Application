@@ -1,6 +1,6 @@
 using WebBanHang.Models.DTOs.Seller.Order;
 using WebBanHang.Models.Enums;
-using WebBanHang.Repositories;
+using WebBanHang.Repositories.Interfaces;
 using WebBanHang.Services.Seller.Interfaces;
 
 namespace WebBanHang.Services.Seller.Implementations;

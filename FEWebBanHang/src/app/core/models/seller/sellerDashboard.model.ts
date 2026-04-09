@@ -19,9 +19,12 @@ export interface SellerDashboardDto{
     recentRatings:RecentRatingDashboardDto[];
 }
 export interface TopSellingProductDashboardDto{
+    productId:string;
     productName:string;
     quantitySold:number;
     totalRevenue:number;
+    imageUrl:string;
+    sku:string;
 }
 export interface OrdersProcessDashboardDto{
     orderId:string;
@@ -35,10 +38,15 @@ export interface ErrorInventoryDashboardDto{
     productId:string;
     productName:string;
     stockQuantity:number;
+    sku:string;
 }
 export interface RecentRatingDashboardDto{
+    reviewId:string;
     productId:string;
     productName:string;
+    customerName:string;
+    sku:string;
+    imageUrl:string;
     rating:number;
     comment:string;
     reviewDate:string;

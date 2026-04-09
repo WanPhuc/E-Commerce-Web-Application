@@ -1,7 +1,8 @@
 using WebBanHang.Models;
 using WebBanHang.Models.DTOs.Sellers;
+using WebBanHang.Models.EntityModels;
 using WebBanHang.Models.Enums;
-using WebBanHang.Repositories;
+using WebBanHang.Repositories.Interfaces;
 using WebBanHang.Services.Interfaces;
 namespace WebBanHang.Services.Implementations;
 public class SellerApplicationService : ISellerApplicationService{
@@ -50,7 +51,7 @@ public class SellerApplicationService : ISellerApplicationService{
         app.ReviewedAt=DateTime.UtcNow;
         await _appRepo.UpdateAsync(app);
 
-        var seller = new Models.Seller
+        var seller = new Models.EntityModels.Seller
         {
             UserId=app.UserId,
             StoreName=app.ShopName,

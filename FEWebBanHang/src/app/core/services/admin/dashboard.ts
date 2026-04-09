@@ -1,3 +1,4 @@
+import { environment } from './../../../../environments/environment';
 import { DashboardChartDto, DashboardChartPointDto, DashboardDto, DashboardRanger } from './../../models/admin/dashboard.model';
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
@@ -6,7 +7,7 @@ import { ApiResponse } from '../auth/auth';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
-    private baseUrl = 'http://localhost:5144/api/v1/admin';
+    private baseUrl = `${environment.apiUrl}/admin`;
     private http =inject(HttpClient);
 
     getDashboardStats():Observable<DashboardDto>{

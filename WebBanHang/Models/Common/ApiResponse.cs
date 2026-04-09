@@ -4,9 +4,9 @@ public class ApiResponse<T>
 {
     public int Status { get; set; }
     public string Message { get; set; } = string.Empty;
-    public T Data { get; set; } = default!;
+    public T? Data { get; set; } = default!;
 
-    public static ApiResponse<T> Ok(T data, string message="Sucssess",int status=200) => new ApiResponse<T>{
+    public static ApiResponse<T> Success(T? data, string message="Sucssess",int status=200) => new ApiResponse<T>{
         Status = status,
         Message = message,
         Data = data

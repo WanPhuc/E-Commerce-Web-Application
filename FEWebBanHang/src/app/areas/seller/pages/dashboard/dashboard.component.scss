@@ -1,0 +1,55 @@
+.container-fluid{
+    padding: 40px;
+    margin: 0px;
+    
+    .card-stats {
+        // Thay vì gap cứng, hãy để Bootstrap Grid quản lý
+        // Nếu muốn card cao bằng nhau và cố định:
+        min-height: 120px; 
+        .clickable-card {
+            border-left: 4px solid #3b82f6; // Tạo điểm nhấn màu sắc cho mỗi loại card
+        }
+
+        .card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+
+            &:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+            }
+
+            .card-body {
+                padding: 1rem; // Chỉnh padding nhỏ lại để 6 card không bị chật
+            }
+        }
+    }
+    .list-order{
+        flex: 3;
+    }
+    .list-error-inventory{
+        flex: 1;
+
+    }
+    
+    .chart{
+        width: 100%;
+        min-height: 400px;
+        .chart-warp{
+            position: relative;
+            width: 100%;
+            height: 400px;
+        }
+    }
+    
+    .list-recent-review{
+        .comment{
+            font-size: 0.85rem; 
+            height: 40px; 
+            overflow: hidden; 
+            display: -webkit-box; 
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical;
+        }
+    }
+}

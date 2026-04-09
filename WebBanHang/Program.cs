@@ -15,7 +15,10 @@ using WebBanHang.Services.Seller.Implementations;
 using WebBanHang.Helpers.Product;
 using WebBanHang.Services.Seller.Interfaces;
 using WebBanHang.Helpers.Hubs;
-using WebBanHang.Services.Global.Hubs;
+using WebBanHang;
+using Microsoft.OpenApi;
+using System.Security.Cryptography.Xml;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +26,31 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "NHap token o day"
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            }, new string[] { }
+        }
+    });
+});
 
 builder.Services.AddSignalR();
 
@@ -33,70 +60,37 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddCors(opt =>
 {
-    opt.AddPolicy("react", p => p
+    opt.AddPolicy("angular", p => p
     .WithOrigins("http://localhost:4200")
     .AllowAnyHeader()
     .AllowAnyMethod()
     .AllowCredentials());
 });
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.Cookie.Name = "WebBanHangAuthCookie";
-        options.LoginPath = "/Login/SignIn";
-        options.LogoutPath = "/Login/Logout";
-        options.AccessDeniedPath = "/Login/AccessDenied";
-        options.SlidingExpiration = true;
-        options.ExpireTimeSpan = TimeSpan.FromHours(5);
-        options.Cookie.HttpOnly = true;
+//builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+//    .AddCookie(options =>
+//    {
+//        options.Cookie.Name = "WebBanHangAuthCookie";
+//        options.LoginPath = "/Login/SignIn";
+//        options.LogoutPath = "/Login/Logout";
+//        options.AccessDeniedPath = "/Login/AccessDenied";
+//        options.SlidingExpiration = true;
+//        options.ExpireTimeSpan = TimeSpan.FromHours(5);
+//        options.Cookie.HttpOnly = true;
 
-        options.Cookie.SameSite = SameSiteMode.Lax;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-        options.Events = new CookieAuthenticationEvents
-        {
-            OnValidatePrincipal = async context =>
-            {
-                Console.WriteLine($"🔐 Cookie validated at {DateTime.Now}");
-            }
-        };
+//        options.Cookie.SameSite = SameSiteMode.None;
+//        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+//        options.Events = new CookieAuthenticationEvents
+//        {
+//            OnValidatePrincipal = async context =>
+//            {
+//                Console.WriteLine($"🔐 Cookie validated at {DateTime.Now}");
+//            }
+//        };
 
-    });
-
-builder.Services.AddScoped(typeof(IRepository<>), typeof(SqlServerRepository<>));
-//Repository
-builder.Services.AddScoped<ICartRepository, SqlServerCartRepository>();
-builder.Services.AddScoped<IOderRepository, SqlServerOderRepository>();
-builder.Services.AddScoped<IProductRepository, SqlServerProductRepository>();
-builder.Services.AddScoped<ISellerRepository, SqlServerSellerRepository>();
-builder.Services.AddScoped<ISellerApplicationRepository, SqlServerSellerApplicationRepository>();
-builder.Services.AddScoped<IUserRepository, SqlServerUserRepository>();
-builder.Services.AddScoped<IRoleRepository, SqlServerRoleRepository>();
-builder.Services.AddScoped<ICategoryRepository, SqlServerCategoryRepository>();
-builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-
-
-
-//Services - Common
-builder.Services.AddScoped<INotificationService, NotificationService>();
-
-//Services - Admin
-builder.Services.AddScoped<ISellerService, SellerService>();
-builder.Services.AddScoped<ISellerApplicationService, SellerApplicationService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IAdminService, AdminService>();
-
-//Services - Seller
-builder.Services.AddScoped<IProductSellerService, ProductSellerService>();
-builder.Services.AddScoped<ISellerInventoryService, SellerInventoryService>();
-builder.Services.AddScoped<ISellerOrderService, SellerOrderService>();
-builder.Services.AddScoped<ISellerRevenueService, SellerRevenueService>();
-builder.Services.AddScoped<ISellerDashboardService, SellerDashboardService>();
-builder.Services.AddScoped<ISellerSettingService, SellerSettingService>();
-
-//Helper
-builder.Services.AddScoped<FileHelper>();
+//    });
+// DI Declaration
+builder.Services.AddServices(builder.Configuration);
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -133,13 +127,17 @@ app.UseHttpsRedirection();
 //app.UseStatusCodePagesWithReExecute("/Login/AccessDenied", "?code={0}");
 app.UseRouting();
 
-app.UseCors("react");
+app.UseCors("angular");
 
-app.UseAuthentication();
-app.UseAuthorization();
-
+//miiddleware
+app.UseMiddleware<CustomAuthorizeMiddleware>();
 app.UseMiddleware<PermissionMiddleware>();
 app.UseMiddleware<AutoPermissionMiddleware>();
+
+//app.UseAuthentication();
+app.UseAuthorization();
+
+
 
 app.MapStaticAssets();
 

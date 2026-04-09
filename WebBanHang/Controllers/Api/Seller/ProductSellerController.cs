@@ -146,7 +146,7 @@ public class ProductSellerController : ControllerBase
         }
     }
     [HttpPut("{productId:guid}/images/{imageId:guid}")]
-    public async Task<ActionResult<ApiResponse<ProductImageDto>>> UpdateProductImage(Guid productId, Guid imageId, [FromBody] ProductImageUpdateDto dto)
+    public async Task<ActionResult<ApiResponse<ProductImageDto>>> UpdateProductImage(Guid productId, Guid imageId, [FromBody] ProductImageCreateDto dto)
     {
         try
         {

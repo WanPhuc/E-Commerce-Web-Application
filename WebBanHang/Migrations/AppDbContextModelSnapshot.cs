@@ -17,12 +17,12 @@ namespace WebBanHang.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.11")
+                .HasAnnotation("ProductVersion", "9.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("WebBanHang.Models.Address", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Address", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,6 +35,12 @@ namespace WebBanHang.Migrations
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlg")
+                        .HasColumnType("bit");
 
                     b.Property<string>("District")
                         .IsRequired()
@@ -53,6 +59,9 @@ namespace WebBanHang.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -67,11 +76,20 @@ namespace WebBanHang.Migrations
                     b.ToTable("Addresses");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Cart", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Cart", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlg")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -83,7 +101,7 @@ namespace WebBanHang.Migrations
                     b.ToTable("Carts");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.CartItem", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.CartItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -92,11 +110,20 @@ namespace WebBanHang.Migrations
                     b.Property<Guid>("CartId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlg")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -107,11 +134,17 @@ namespace WebBanHang.Migrations
                     b.ToTable("CartItems");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Category", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Category", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlg")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -121,6 +154,9 @@ namespace WebBanHang.Migrations
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ParentId");
@@ -128,7 +164,7 @@ namespace WebBanHang.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Notification", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Notification", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -136,6 +172,9 @@ namespace WebBanHang.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlg")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
@@ -157,12 +196,15 @@ namespace WebBanHang.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Order", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Order", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -176,6 +218,9 @@ namespace WebBanHang.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlg")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("PaidAt")
                         .HasColumnType("datetime2");
@@ -207,11 +252,17 @@ namespace WebBanHang.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.OrderItem", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.OrderItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlg")
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
@@ -225,6 +276,9 @@ namespace WebBanHang.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
@@ -234,7 +288,7 @@ namespace WebBanHang.Migrations
                     b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Payment", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Payment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -245,6 +299,9 @@ namespace WebBanHang.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlg")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Method")
                         .IsRequired()
@@ -257,6 +314,9 @@ namespace WebBanHang.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId")
@@ -265,7 +325,7 @@ namespace WebBanHang.Migrations
                     b.ToTable("Payments");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Product", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Product", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -276,6 +336,9 @@ namespace WebBanHang.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlg")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -310,6 +373,9 @@ namespace WebBanHang.Migrations
                     b.Property<int>("Stock")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
@@ -319,11 +385,17 @@ namespace WebBanHang.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.ProductImage", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.ProductImage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlg")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
@@ -336,6 +408,9 @@ namespace WebBanHang.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
@@ -343,7 +418,7 @@ namespace WebBanHang.Migrations
                     b.ToTable("ProductImages");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.ProductReview", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.ProductReview", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -355,6 +430,9 @@ namespace WebBanHang.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlg")
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
@@ -369,6 +447,9 @@ namespace WebBanHang.Migrations
                     b.Property<DateTime?>("SellerReplyAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -381,11 +462,17 @@ namespace WebBanHang.Migrations
                     b.ToTable("ProductReviews");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Role", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlg")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -400,12 +487,15 @@ namespace WebBanHang.Migrations
                     b.Property<decimal>("Permissions")
                         .HasColumnType("decimal(20,0)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Seller", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Seller", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -416,6 +506,9 @@ namespace WebBanHang.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlg")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -428,6 +521,9 @@ namespace WebBanHang.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -443,7 +539,7 @@ namespace WebBanHang.Migrations
                     b.ToTable("Sellers");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.SellerApplication", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.SellerApplication", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -458,6 +554,9 @@ namespace WebBanHang.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlg")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -482,6 +581,9 @@ namespace WebBanHang.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -496,7 +598,7 @@ namespace WebBanHang.Migrations
                     b.ToTable("SellerApplications");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.User", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -504,6 +606,9 @@ namespace WebBanHang.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlg")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -526,6 +631,9 @@ namespace WebBanHang.Migrations
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
@@ -533,9 +641,9 @@ namespace WebBanHang.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Address", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Address", b =>
                 {
-                    b.HasOne("WebBanHang.Models.User", "User")
+                    b.HasOne("WebBanHang.Models.EntityModels.User", "User")
                         .WithMany("Addresses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -544,9 +652,9 @@ namespace WebBanHang.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Cart", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Cart", b =>
                 {
-                    b.HasOne("WebBanHang.Models.User", "User")
+                    b.HasOne("WebBanHang.Models.EntityModels.User", "User")
                         .WithMany("Carts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -555,15 +663,15 @@ namespace WebBanHang.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.CartItem", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.CartItem", b =>
                 {
-                    b.HasOne("WebBanHang.Models.Cart", "Cart")
+                    b.HasOne("WebBanHang.Models.EntityModels.Cart", "Cart")
                         .WithMany("CartItems")
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebBanHang.Models.Product", "Product")
+                    b.HasOne("WebBanHang.Models.EntityModels.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -574,9 +682,9 @@ namespace WebBanHang.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Category", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Category", b =>
                 {
-                    b.HasOne("WebBanHang.Models.Category", "Parent")
+                    b.HasOne("WebBanHang.Models.EntityModels.Category", "Parent")
                         .WithMany("SubCategories")
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -584,21 +692,21 @@ namespace WebBanHang.Migrations
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Order", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Order", b =>
                 {
-                    b.HasOne("WebBanHang.Models.Address", "Address")
+                    b.HasOne("WebBanHang.Models.EntityModels.Address", "Address")
                         .WithMany()
                         .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("WebBanHang.Models.Seller", "Seller")
+                    b.HasOne("WebBanHang.Models.EntityModels.Seller", "Seller")
                         .WithMany("Orders")
                         .HasForeignKey("SellerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("WebBanHang.Models.User", "User")
+                    b.HasOne("WebBanHang.Models.EntityModels.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -611,15 +719,15 @@ namespace WebBanHang.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.OrderItem", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.OrderItem", b =>
                 {
-                    b.HasOne("WebBanHang.Models.Order", "Order")
+                    b.HasOne("WebBanHang.Models.EntityModels.Order", "Order")
                         .WithMany("Items")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebBanHang.Models.Product", "Product")
+                    b.HasOne("WebBanHang.Models.EntityModels.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -630,26 +738,26 @@ namespace WebBanHang.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Payment", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Payment", b =>
                 {
-                    b.HasOne("WebBanHang.Models.Order", "Order")
+                    b.HasOne("WebBanHang.Models.EntityModels.Order", "Order")
                         .WithOne("Payment")
-                        .HasForeignKey("WebBanHang.Models.Payment", "OrderId")
+                        .HasForeignKey("WebBanHang.Models.EntityModels.Payment", "OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Product", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Product", b =>
                 {
-                    b.HasOne("WebBanHang.Models.Category", "Category")
+                    b.HasOne("WebBanHang.Models.EntityModels.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebBanHang.Models.Seller", "Seller")
+                    b.HasOne("WebBanHang.Models.EntityModels.Seller", "Seller")
                         .WithMany("Products")
                         .HasForeignKey("SellerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -660,9 +768,9 @@ namespace WebBanHang.Migrations
                     b.Navigation("Seller");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.ProductImage", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.ProductImage", b =>
                 {
-                    b.HasOne("WebBanHang.Models.Product", "Product")
+                    b.HasOne("WebBanHang.Models.EntityModels.Product", "Product")
                         .WithMany("Images")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -671,15 +779,15 @@ namespace WebBanHang.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.ProductReview", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.ProductReview", b =>
                 {
-                    b.HasOne("WebBanHang.Models.Product", "Product")
+                    b.HasOne("WebBanHang.Models.EntityModels.Product", "Product")
                         .WithMany("Reviews")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebBanHang.Models.User", "User")
+                    b.HasOne("WebBanHang.Models.EntityModels.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -690,17 +798,17 @@ namespace WebBanHang.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Seller", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Seller", b =>
                 {
-                    b.HasOne("WebBanHang.Models.Address", "Address")
+                    b.HasOne("WebBanHang.Models.EntityModels.Address", "Address")
                         .WithOne("Seller")
-                        .HasForeignKey("WebBanHang.Models.Seller", "AddressId")
+                        .HasForeignKey("WebBanHang.Models.EntityModels.Seller", "AddressId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("WebBanHang.Models.User", "User")
+                    b.HasOne("WebBanHang.Models.EntityModels.User", "User")
                         .WithOne("Seller")
-                        .HasForeignKey("WebBanHang.Models.Seller", "UserId")
+                        .HasForeignKey("WebBanHang.Models.EntityModels.Seller", "UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -709,9 +817,9 @@ namespace WebBanHang.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.SellerApplication", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.SellerApplication", b =>
                 {
-                    b.HasOne("WebBanHang.Models.User", "User")
+                    b.HasOne("WebBanHang.Models.EntityModels.User", "User")
                         .WithMany("SellerApplications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -720,9 +828,9 @@ namespace WebBanHang.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.User", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.User", b =>
                 {
-                    b.HasOne("WebBanHang.Models.Role", "Role")
+                    b.HasOne("WebBanHang.Models.EntityModels.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -731,50 +839,50 @@ namespace WebBanHang.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Address", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Address", b =>
                 {
                     b.Navigation("Seller");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Cart", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Cart", b =>
                 {
                     b.Navigation("CartItems");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Category", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Category", b =>
                 {
                     b.Navigation("Products");
 
                     b.Navigation("SubCategories");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Order", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Order", b =>
                 {
                     b.Navigation("Items");
 
                     b.Navigation("Payment");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Product", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Product", b =>
                 {
                     b.Navigation("Images");
 
                     b.Navigation("Reviews");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Role", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Role", b =>
                 {
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.Seller", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.Seller", b =>
                 {
                     b.Navigation("Orders");
 
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("WebBanHang.Models.User", b =>
+            modelBuilder.Entity("WebBanHang.Models.EntityModels.User", b =>
                 {
                     b.Navigation("Addresses");
 

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebBanHang.Models.Common;
 using WebBanHang.Models.DTOs.Users;
-using WebBanHang.Models.ViewModels;
 using WebBanHang.Services.Interfaces;
 namespace WebBanHang.Controllers.Api.Admin;
 [ApiController]
@@ -20,7 +19,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult<ApiResponse<List<UserDto>>>> GetAllUsers()
     {   
         var users = await _userService.GetAllUserAsync();
-        return Ok(ApiResponse<List<UserDto>>.Ok(users));
+        return Ok(ApiResponse<List<UserDto>>.Success(users));
     }
         
     [HttpGet("detail/{id:guid}")]
@@ -52,7 +51,7 @@ public class UserController : ControllerBase
         try
         {
             var user = await _userService.CreateUserAsync(dto);
-            return Ok(ApiResponse<UserDto>.Ok(user,"User created successfully"));
+            return Ok(ApiResponse<UserDto>.Success(user,"User created successfully"));
         }catch(InvalidOperationException ex)
         {
             return BadRequest(ApiResponse<UserDto>.Fail(ex.Message,400));

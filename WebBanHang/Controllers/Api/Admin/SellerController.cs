@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebBanHang.Models.Common;            // ✅ ApiResponse
+using WebBanHang.Models.DTOs.Admin.Sellers;
 using WebBanHang.Models.DTOs.Sellers;
-using WebBanHang.Models.ViewModels;
 using WebBanHang.Services.Interfaces;
 
 namespace WebBanHang.Controllers.Api.Admin;

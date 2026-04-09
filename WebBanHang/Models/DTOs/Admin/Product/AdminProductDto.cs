@@ -1,4 +1,4 @@
-using WebBanHang.Models;
+using WebBanHang.Models.EntityModels;
 
 public class AdminProductDto
 {

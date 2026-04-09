@@ -1,5 +1,6 @@
 using WebBanHang.Migrations;
 using WebBanHang.Models;
+using WebBanHang.Models.EntityModels;
 
 public class CategoryService : ICategoryService
 {

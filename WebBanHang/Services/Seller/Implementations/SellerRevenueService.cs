@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using WebBanHang.Data;
 using WebBanHang.Models.DTOs.Sellers.Revenue;
 using WebBanHang.Models.Enums;
-using WebBanHang.Repositories;
+using WebBanHang.Repositories.Interfaces;
 using WebBanHang.Services.Seller.Interfaces;
 
 namespace WebBanHang.Services.Seller.Implementations;

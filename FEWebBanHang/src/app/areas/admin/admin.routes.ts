@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
 
 export const adminRoutes: Routes = [
-    {path:'',canActivate:[roleGuard(['Admin'])],
+    {path:'',
         loadComponent:()=>
             import('./layout/admin-layout.component').then(m => m.AdminLayoutComponent),
         children:[

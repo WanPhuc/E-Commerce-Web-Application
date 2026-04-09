@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using WebBanHang.Models;
 using WebBanHang.Models.DTOs;
+using WebBanHang.Models.DTOs.Admin.Sellers;
 using WebBanHang.Models.DTOs.Sellers;
 using WebBanHang.Models.Enums;
-using WebBanHang.Models.ViewModels;
-using WebBanHang.Repositories;
+using WebBanHang.Repositories.Interfaces;
 using WebBanHang.Services.Interfaces;
 namespace WebBanHang.Services.Implementations;
 

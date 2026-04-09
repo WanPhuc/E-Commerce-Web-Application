@@ -1,12 +1,14 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebBanHang.Repositories;
+using WebBanHang.Models.Common;
+using WebBanHang.Models.DTOs.Global;
+using WebBanHang.Repositories.Interfaces;
 
 namespace WebBanHang.Controllers.Api.Global;
 
 [ApiController]
-[Route("api/global/notifications")]
+[Route("api/v1/global/notifications")]
 [Authorize]
 public class NotificationController : ControllerBase
 {
@@ -17,23 +19,23 @@ public class NotificationController : ControllerBase
         _notificationRepository = notificationRepository;
     }
     [HttpGet]
-    public async Task<IActionResult> GetMyNotifications()
+    public async Task<ActionResult<ApiResponse<NotificationDto>>> GetMyNotifications()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
         if (userIdClaim == null) return Unauthorized("Not found user information.");
         Guid userId = Guid.Parse(userIdClaim.Value);
         var notifications = await _notificationRepository.GetNotificationsByReceiverIdAsync(userId);
-
-        return Ok(notifications.Select(n => new
+        var noti = notifications.Select(n=>new NotificationDto
         {
-            id = n.Id,
-            title = n.Title,
-            message = n.Message,
-            redirectUrl = n.RedirectUrl,
-            type = n.Type.ToString(),
-            isRead = n.IsRead,
-            createdAt = n.CreatedAt,
-        }));
+            Id = n.Id,
+            Title = n.Title,
+            Message = n.Message,
+            RedirectUrl = n.RedirectUrl,
+            Type = n.Type,
+            IsRead = n.IsRead,
+            CreatedAt = n.CreatedAt
+        }).ToList();
+        return Ok(ApiResponse<IEnumerable<NotificationDto>>.Ok(noti)); 
     }
     [HttpGet("unread-count")]
     public async Task<IActionResult> GetUnreadNotificationCount()

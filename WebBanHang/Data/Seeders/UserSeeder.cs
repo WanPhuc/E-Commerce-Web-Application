@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebBanHang.Helpers;
-using WebBanHang.Models;
+using WebBanHang.Models.EntityModels;
 namespace WebBanHang.Data.Seeders;
 public static class UserSeeder
 {
