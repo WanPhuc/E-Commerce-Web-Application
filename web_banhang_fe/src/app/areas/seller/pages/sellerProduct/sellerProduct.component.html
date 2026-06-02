@@ -1,0 +1,25 @@
+<div class="container-fluid">
+    <div class="header d-flex align-items-end justify-content-between mb-3">
+        <div>
+            <h3 class="fw-bold">{{ 'ui.seller.productManagerTitle' | translate }}</h3>
+            <small class="text-muted">{{ 'ui.seller.productManagerSubtitle' | translate }}</small>
+        </div>
+        <div><button class="btn p-2 btn-primary"><i class="fa-solid fa-plus"></i> {{ 'ui.seller.addNewProduct' | translate }}</button></div>
+    </div>
+    @if (!loading()) {
+        <div class="text-center py-5">
+            <div class="spinner-border " role="status">
+                <span class="visually-hidden">{{ 'ui.loading' | translate }}</span>
+            </div>
+        </div>
+    }@else {
+        @if (products().length>0) {
+            @for (p of products(); track p.id) {
+                
+            }
+        }@else {
+            <div class="text-center ">{{ 'ui.noProductsFound' | translate }}</div>
+        }
+        
+    }
+</div>

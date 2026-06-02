@@ -1,0 +1,74 @@
+<div class="container-fluid">
+    <button class="btn btn-outline-secondary" [routerLink]="['/admin/seller']">
+            {{ 'ui.back' | translate }}
+    </button>
+    @if (loading()) {
+        <div class="text-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">{{ 'ui.loading' | translate }}</span>
+            </div>
+        </div>
+    }
+    <div class="container-card">
+        @if (!loading()&&  detail()) {
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-center mb-3 gap-3 ">
+                        <h4 class="fw-bold">{{detail()!.storeName}}</h4>
+                        
+                    </div>
+                    <hr>
+                    <div class="card-detail">
+                        <div>
+                            <b>{{ 'ui.id' | translate }} :</b>
+                            <span>{{detail()!.id}}</span>
+                        </div>
+                        <div>
+                            <b>{{ 'ui.description' | translate }} :</b>
+                            <span>{{detail()!.description}}</span>
+                        </div>
+                        <div class="">
+                            <b>{{ 'ui.emailLabel' | translate }} :</b>
+                            <span class="text-muted">{{detail()!.email}}</span>
+                            
+                        </div>
+                        <div class="">
+                            <b>{{ 'ui.createdAt' | translate }} : </b>
+                            <span> {{detail()!.createdAt|date:'yyyy-MM-dd HH:mm:ss'}}
+                            </span>
+                        </div>
+                        <div class="">
+                            <b>{{ 'ui.statusLabel' | translate }} : </b>
+                            <span>{{detail()!.status|status}}</span>
+
+                        </div>
+                        <div class="">
+                                                        <b>{{ 'ui.userId' | translate }} :</b>
+                            <span>{{detail()!.userId}}</span>
+                        </div>
+                        <div class="">
+                                                        <b>{{ 'ui.fullName' | translate }} :</b>
+                            <span>{{detail()!.fullName}}</span>
+                        </div>
+                        <div class="">
+                                                    <b>{{ 'ui.reviewAt' | translate }} :</b>
+
+                          @if (detail()!.reviewAt) {
+                            <span>{{detail()!.reviewAt|date:'yyyy-MM-dd HH:mm:ss'}}</span>
+                          }@else {
+                                                        <span>{{ 'ui.notReviewed' | translate }}</span>
+                          }
+                            
+                        </div>
+                        
+                    </div>
+                    <div class="group-btn mt-5">
+                                            <button class="btn btn-primary" [title]="'ui.approve' | translate" (click)="approve(detail()!.id)">{{ 'ui.approve' | translate }}</button>
+                                            <button class="btn btn-danger" [title]="'ui.reject' | translate"(click)="reject(detail()!.id)">{{ 'ui.reject' | translate }}</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    
+</div>

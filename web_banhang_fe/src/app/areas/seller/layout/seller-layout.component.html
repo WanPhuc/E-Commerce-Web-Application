@@ -1,0 +1,210 @@
+
+<div class="d-flex container-seller overflow-hidden">
+    @if(!isSidebarOpen()) {
+        <div class="sidebar-backdrop d-md-none" (click)="toggleSidebar()"></div>
+    }
+    <aside class="sidebar d-flex flex-column shadow-sm" [ngClass]="{'show-mobile': !isSidebarOpen(), 'collapsed-desktop': isSidebarOpen()}">
+        <div class="sidebar-header py-4">
+            <h4 class="text-center mb-0">Shoppy</h4>
+        </div>
+        
+        <nav class="sidebar-nav custom-scrollbar flex-grow-1">
+            <ul class="nav nav-pills flex-column px-2">
+                <li class="nav-item sidebar-item">
+                    <a class="nav-link" routerLink="/seller" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                        <i class="fa-solid fa-chart-line fa-fw me-3"></i>
+                        <span>{{ 'ui.seller.dashboard' | translate }}</span>
+                    </a>
+                </li>
+                <li class="nav-item sidebar-item">
+                    <a class="nav-link" routerLink="/seller/products" routerLinkActive="active">
+                        <i class="fa-solid fa-box fa-fw me-3"></i>
+                        <span>{{ 'ui.product' | translate }}</span>
+                    </a>
+                </li>
+                <li class="nav-item sidebar-item">
+                    <a class="nav-link" routerLink="/seller/inventory" routerLinkActive="active">
+                        <i class="fa-solid fa-warehouse fa-fw me-3"></i>
+                        <span>{{ 'ui.inventory' | translate }}</span>
+                    </a>
+                </li>
+                <li class="nav-item sidebar-item">
+                    <a class="nav-link" routerLink="/seller/orders" routerLinkActive="active">
+                        <i class="fa-solid fa-clipboard-list fa-fw me-3"></i>
+                        <span>{{ 'ui.orders' | translate }}</span>
+                    </a>
+                </li>
+                <li class="nav-item sidebar-item">
+                    <a class="nav-link" routerLink="/seller/revenue" routerLinkActive="active">
+                        <i class="fa-solid fa-wallet fa-fw me-3"></i>
+                        <span>{{ 'ui.revenue' | translate }}</span>
+                    </a>
+                </li>
+                <li class="nav-item sidebar-item">
+                    <a class="nav-link" routerLink="/seller/chat" routerLinkActive="active">
+                        <i class="fa-solid fa-message fa-fw me-3"></i>
+                        <span>{{ 'ui.chat' | translate }}</span>
+                    </a>
+                </li>
+                <li class="nav-item sidebar-item">
+                    <a class="nav-link" routerLink="/seller/notification" routerLinkActive="active">
+                        <i class="fa-solid fa-bell fa-fw me-3"></i>
+                        <span>{{ 'ui.notification' | translate }}</span>
+                    </a>
+                </li>
+                <li class="nav-item sidebar-item mt-auto"> <a class="nav-link" routerLink="/seller/settings" routerLinkActive="active">
+                        <i class="fa-solid fa-gear fa-fw me-3"></i>
+                        <span>{{ 'ui.setting' | translate }}</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <div class="main-content flex-grow-1 bg-light vh-100">
+        <div class="header-content d-flex justify-content-between align-items-center ">
+            <div class="d-flex align-items-center  mx-lg-4">
+                <div>
+                    <button class="btn border-0 border-none me-2" (click)="toggleSidebar()"><i class="fa-solid" [ngClass]="isSidebarOpen()?'fa-angles-right':'fa-angles-left'"></i></button>
+                </div>
+                <div class="input-group shadow-sm rounded">
+                    <button class="btn bg-light border border-end-0 text-muted" type="button">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    
+                    <input type="text" 
+                        class="form-control bg-light border-start-0 shadow-none ps-0" 
+                        [placeholder]="'ui.searchOrdersProducts' | translate"
+                        style="border-color: #dee2e6;"> 
+                </div>
+            </div>
+            <div class="dropdown-noti d-flex align-items-center">
+                <div class="dropdown me-2 language-switcher">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle language-switcher__button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ languageLabel }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end language-switcher__menu">
+                        <li><button type="button" class="dropdown-item" (click)="changeLanguage('en')">English</button></li>
+                        <li><button type="button" class="dropdown-item" (click)="changeLanguage('vi')">Tiếng Việt</button></li>
+                        <li><button type="button" class="dropdown-item" (click)="changeLanguage('jp')">日本語</button></li>
+                    </ul>
+                </div>
+                <div class="dropdown me-2">
+                    <a class="btn border-0 position-relative" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" (click)="loadNotifications()">
+                        <i class="fa-solid fa-bell  fa-xl "></i>
+                        @if (unreadCount()>0) {
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 10px;margin-top: 5px; margin-left: -15px;">
+                                {{unreadCount()>9?'9+':unreadCount()}}
+                        </span>
+                        }
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 py-0 overflow-auto"style="width: 400px; max-height: 450px;">
+                        <li class="p-3 border-bottom bg-light">
+                            <div class="d-flex justify-content-between aligh-items-center">
+                                <h6 class="mb-0 fw-bold">{{ 'ui.notifications' | translate }}</h6>
+                                <a href="#" class="text-primary text-decoration-none small">{{ 'ui.markAsRead' | translate }}</a>
+                            </div>
+                        </li>
+                        @if(notificationsList().length>0){
+                            @if(!loading()){
+                                <div class="custom-scrollbar overflow-auto">
+                                    @for (n of notificationsList(); track n.id) {
+                                        <li>
+                                            <a [href]="n.redirectUrl || '#'" class="dropdown-item p-3 border-bottom d-flex align-items-start " [class.bg-primary-subtle]="!n.isRead"[class.bg-secondary-subtle]="n.isRead">
+                                                @switch (n.type) {
+                                                    @case (notiType.Order) {
+                                                        <div class="bg-primary-subtle text-primary rounded-circle p-2 me-3">
+                                                            <i class="fa-solid fa-cart-shopping"></i>
+                                                        </div>
+                                                    }
+                                                    @case (notiType.Chat) {
+                                                        <div class="bg-success-subtle text-success rounded-circle p-2 me-3">
+                                                            <i class="fa-solid fa-message"></i>
+                                                        </div>
+                                                    }
+                                                    @case (notiType.Promotion) {
+                                                        <div class="bg-warning-subtle text-warning rounded-circle p-2 me-3">
+                                                            <i class="fa-solid fa-gift"></i>
+                                                        </div>
+                                                    }
+                                                    @default {
+                                                        <div class="bg-info-subtle text-info rounded-circle p-2 me-3">
+                                                            <i class="fa-solid fa-bell"></i>
+                                                        </div>
+                                                    }
+                                                }
+                                                <div class="flex-grow-1">
+                                                    <p class="mb-1 text-wrap" style="font-size: 14px;"[class.fw-bold]="!n.isRead">{{n.title}}</p>
+                                                    <small class="text-muted text-clamp d-block">{{n.message}}</small>
+                                                    <small [class.text-muted]="n.isRead"[class.text-primary]="!n.isRead">{{n.createdAt|timeAgo}}</small>
+
+                                                </div>
+                                                
+                                                
+                                                @if (!n.isRead) {
+                                                    <span class="ms-2 badge rounded-circle bg-primary p-1 align-self-center" style="width: 10px; height: 10px; display: inline-block;"></span>
+                                                }
+                                                
+                                            </a>                                      
+                                        </li>
+                                    }
+                                    
+                                </div>
+                            }@else {
+                                <div class="text-center m-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">{{ 'ui.loading' | translate }}</span>
+                                    </div>
+                                </div>
+                            }
+                        }@else {
+                            <li class="p-3">
+                                <p class="mb-0 text-center text-muted">{{ 'ui.noNewNotifications' | translate }}</p>
+                            </li>
+                        }
+                        <li>
+                            <a class="dropdown-item text-center py-2 bg-light small fw-bold text-primary" [routerLink]="'/seller/notification'">
+                                {{ 'ui.viewAllNotifications' | translate }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="me-2">
+                    <div class="position-relative">
+                        <i class="fa-solid fa-message fa-xl" ></i>
+                        <span class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 10px;">
+                            1
+                    </span>
+                    </div>
+                </div>
+                <span class="vr mx-2"></span>
+                <div class="d-flex ">
+                    <ul class="nav-bar nav ms-auto">
+                        @if(auth.me$|async;as me){
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" >
+                                    <div class="pe-3 text-end d-none d-md-block">
+                                        <div class="fw-bold ">{{me?.fullName}}</div>
+                                        <small class="">{{me?.role}}</small>
+                                    </div>
+                                    <div class="rounded-circle">
+                                        <i class="bi bi-person"></i>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a routerLink="/seller/setting" class="dropdown-item">{{ 'ui.setting' | translate }}</a></li>
+                                    <li><a routerLink="/orders" class="dropdown-item">{{ 'ui.orders' | translate }}</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><button type="button" class="dropdown-item" (click)="logout()">{{ 'ui.logout' | translate }}</button></li>
+                                </ul>
+                        </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div>
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

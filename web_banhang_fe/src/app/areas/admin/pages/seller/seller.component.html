@@ -1,0 +1,196 @@
+<div class="seller-management-page container-fluid">
+    <div class="page-hero card shadow-sm border-0">
+        <div class="page-hero__content">
+            <div class="page-hero__eyebrow">{{ 'ui.admin.adminPanel' | translate }}</div>
+            <h2>{{ 'ui.admin.sellerManagerTitle' | translate }}</h2>
+        </div>
+
+        <div class="page-hero__stats">
+            <div class="mini-stat">
+                <span>{{ 'ui.admin.seller' | translate }}</span>
+                <strong>{{ sellerCount }}</strong>
+            </div>
+            <div class="mini-stat mini-stat--accent">
+                <span>{{ 'ui.admin.applicationSeller' | translate }}</span>
+                <strong>{{ pendingCount() }}</strong>
+            </div>
+            <div class="mini-stat">
+                <span>{{ 'ui.actions' | translate }}</span>
+                <strong>{{ applicationCount }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="management-toolbar card shadow-sm border-0">
+        <div class="management-toolbar__tabs">
+            <button type="button" class="tab-button" [class.active]="activeTab()==='seller'" (click)="switchTab('seller')">
+                <i class="fa-solid fa-store"></i>
+                <span>{{ 'ui.admin.seller' | translate }}</span>
+                <strong>{{ sellerCount }}</strong>
+            </button>
+            <button type="button" class="tab-button" [class.active]="activeTab()==='application'" (click)="switchTab('application')">
+                <i class="fa-solid fa-file-signature"></i>
+                <span>{{ 'ui.admin.applicationSeller' | translate }}</span>
+                <strong>{{ applicationCount }}</strong>
+                @if (pendingCount()>0) {
+                    <span class="badge rounded-pill bg-danger ms-2">{{pendingCount()>9?'9+':pendingCount()}}</span>
+                }
+            </button>
+        </div>
+
+        <div class="management-toolbar__meta text-muted">
+            <i class="fa-solid fa-filter me-2"></i>
+            <span>
+                @if (activeTab()==='seller') {
+                    {{ sellerCount > 0 ? (sellerCount + ' ' + ('ui.admin.seller' | translate | lowercase)) : ('ui.admin.noSellersYet' | translate) }}
+                } @else {
+                    {{ applicationCount > 0 ? (applicationCount + ' ' + ('ui.admin.applicationSeller' | translate | lowercase)) : ('ui.admin.noApplicationsYet' | translate) }}
+                }
+            </span>
+        </div>
+    </div>
+
+    @if (loading()) {
+        <div class="loading-card card shadow-sm border-0 text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">{{ 'ui.loading' | translate }}</span>
+            </div>
+        </div>
+    }
+
+    @if (!loading() && activeTab()==='seller') {
+        <div class="table-shell card shadow-sm border-0">
+            <div class="table-shell__header d-flex align-items-center justify-content-between">
+                <div>
+                    <h5 class="mb-1">{{ 'ui.admin.seller' | translate }}</h5>
+                    <small class="text-muted">{{ sellerCount }} {{ 'ui.admin.seller' | translate | lowercase }}</small>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle seller-table mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 56px;">#</th>
+                            <th>{{ 'ui.sellerId' | translate }}</th>
+                            <th>{{ 'ui.name' | translate }}</th>
+                            <th>{{ 'ui.emailLabel' | translate }}</th>
+                            <th>{{ 'ui.approvedAt' | translate }}</th>
+                            <th>{{ 'ui.statusLabel' | translate }}</th>
+                            <th class="text-end" style="width: 160px;">{{ 'ui.actions' | translate }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (sellers().length>0) {
+                            @for (seller of sellers(); track seller.id; let i = $index) {
+                                <tr>
+                                    <td class="text-muted">{{ i + 1 }}</td>
+                                    <td>
+                                        <div class="id-badge">{{ seller.id }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="seller-name">{{ seller.storeName }}</div>
+                                    </td>
+                                    <td class="text-muted">{{ seller.email }}</td>
+                                    <td>{{ seller.createdAt | date:'yyyy-MM-dd HH:mm' }}</td>
+                                    <td>
+                                        <span class="badge rounded-pill seller-status" [ngClass]="getStatusBadgeClass(seller.status)">{{ seller.status | status }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button class="btn btn-sm btn-soft-primary" [attr.title]="'ui.viewDetail' | translate" [routerLink]="['/admin/seller/seller', seller.id]">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-soft-danger" [attr.title]="'ui.lockAccount' | translate">
+                                                <i class="bi bi-lock-fill"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        } @else {
+                            <tr>
+                                <td colspan="7">
+                                    <div class="empty-state">
+                                        <i class="fa-solid fa-store"></i>
+                                        <h6>{{ 'ui.admin.noSellersYet' | translate }}</h6>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    @if (!loading() && activeTab()==='application') {
+        <div class="table-shell card shadow-sm border-0">
+            <div class="table-shell__header d-flex align-items-center justify-content-between">
+                <div>
+                    <h5 class="mb-1">{{ 'ui.admin.applicationSeller' | translate }}</h5>
+                    <small class="text-muted">{{ pendingCount() }} {{ 'ui.admin.approveApplication' | translate | lowercase }}</small>
+                </div>
+                <span class="badge rounded-pill bg-warning-subtle text-warning">{{ pendingCount() }} pending</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle seller-table mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 56px;">#</th>
+                            <th>{{ 'ui.sellerId' | translate }}</th>
+                            <th>{{ 'ui.name' | translate }}</th>
+                            <th>{{ 'ui.emailLabel' | translate }}</th>
+                            <th>{{ 'ui.approvedAt' | translate }}</th>
+                            <th>{{ 'ui.statusLabel' | translate }}</th>
+                            <th class="text-end" style="width: 180px;">{{ 'ui.actions' | translate }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (applications().length>0) {
+                            @for (sellerapp of applications(); track sellerapp.id; let i = $index) {
+                                <tr>
+                                    <td class="text-muted">{{ i + 1 }}</td>
+                                    <td>
+                                        <div class="id-badge">{{ sellerapp.id }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="seller-name">{{ sellerapp.storeName }}</div>
+                                    </td>
+                                    <td class="text-muted">{{ sellerapp.email }}</td>
+                                    <td>{{ sellerapp.createdAt | date:'yyyy-MM-dd HH:mm' }}</td>
+                                    <td>
+                                        <span class="badge rounded-pill seller-status" [ngClass]="getStatusBadgeClass(sellerapp.status)">{{ sellerapp.status | status }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button class="btn btn-sm btn-soft-primary" [attr.title]="'ui.viewDetail' | translate" [routerLink]="['/admin/seller/application-seller', sellerapp.id]">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-soft-success" [attr.title]="'ui.admin.approveApplication' | translate" (click)="approve(sellerapp.id)">
+                                                <i class="bi bi-check-circle"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-soft-danger" [attr.title]="'ui.admin.rejectApplication' | translate" (click)="reject(sellerapp.id)">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        } @else {
+                            <tr>
+                                <td colspan="7">
+                                    <div class="empty-state">
+                                        <i class="fa-solid fa-file-circle-plus"></i>
+                                        <h6>{{ 'ui.admin.noApplicationsYet' | translate }}</h6>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

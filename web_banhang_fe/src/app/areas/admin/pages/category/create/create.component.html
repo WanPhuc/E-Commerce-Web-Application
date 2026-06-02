@@ -1,0 +1,53 @@
+<div class="container-fluid">
+    <div class="text-center mb-4">
+        <h3>{{ 'ui.admin.createCategoryTitle' | translate }}</h3>
+    </div>
+    @if (loading()) {
+        <div class="text-center py-4">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">{{ 'ui.loading' | translate }}</span>
+            </div>
+        </div>
+    }@else {
+        <div class="card">
+            <div class="card-body">
+                <form (ngSubmit)="submit()"[formGroup]="form" novalidate>
+                    <div class="field">
+                        <label class="form-label">{{ 'ui.name' | translate }} <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" formControlName="name" [class.is-invalid]="form.controls.name.touched && form.controls.name.invalid">
+                        @if (form.controls.name.touched&& form.controls.name.invalid) {
+                            <div class="invalid-feedback d-block">
+                                <span *ngIf="form.controls.name.errors?.['required']">{{ 'ui.nameRequired' | translate }}</span>
+                                <span *ngIf="form.controls.name.errors?.['maxlength']">{{ 'ui.nameMaxLength' | translate }}</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="field">
+                        <label class="form-label">{{ 'ui.parent' | translate }}</label>
+                        <select class="form-select" formControlName="parentId">
+                            <option [ngValue]="null">— {{ 'ui.rootNoParent' | translate }} —</option>
+                            @for (otp of parentOptions(); track otp.id) {
+                                <option [ngValue]="otp.id">
+                                    {{'-'.repeat(otp.level)}}{{otp.label}}
+                                </option>
+                            }
+                        </select>
+                        <div class="form-text">
+                            {{ 'ui.admin.createCategoryHint' | translate }}
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button type="submit" class="btn btn-primary" [disabled]="submiting()">
+                            @if (submiting()) {
+                                {{ 'ui.admin.creatingCategory' | translate }}
+                            }@else {
+                                {{ 'ui.admin.createCategoryAction' | translate }}
+                            }
+                        </button>
+                        <button type="button" class="btn btn-secondary" [routerLink]="['/admin/category']">{{ 'ui.cancel' | translate }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,108 @@
+<div class="d-flex container-admin overflow-hidden">
+    <aside class="sidebar bg-dark d-flex flex-column text-white" [class.sidebar--collapsed]="isSidebarCollapsed()">
+        <div class="sidebar-header text-white py-3 px-3 d-flex align-items-center justify-content-between gap-2">
+            <div class="sidebar-brand d-flex align-items-center gap-3 flex-grow-1">
+                <div class="sidebar-brand__icon rounded-3 d-flex align-items-center justify-content-center">
+                    <i class="bi bi-grid-1x2-fill"></i>
+                </div>
+                @if (!isSidebarCollapsed()) {
+                    <div class="sidebar-brand__text">
+                        <h4 class="mb-0">{{ 'ui.admin.title' | translate }}</h4>
+                        <small class="text-white-50">{{ 'ui.admin.adminPanel' | translate }}</small>
+                    </div>
+                }
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <div class="dropdown language-switcher">
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-light dropdown-toggle language-switcher__button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        [attr.title]="'ui.language' | translate"
+                    >
+                        @if (isSidebarCollapsed()) {
+                            <i class="bi bi-translate"></i>
+                        } @else {
+                            {{ languageLabel }}
+                        }
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end language-switcher__menu">
+                        <li><button type="button" class="dropdown-item" (click)="changeLanguage('en')">English</button></li>
+                        <li><button type="button" class="dropdown-item" (click)="changeLanguage('vi')">Tiếng Việt</button></li>
+                        <li><button type="button" class="dropdown-item" (click)="changeLanguage('jp')">日本語</button></li>
+                    </ul>
+                </div>
+                <button
+                    type="button"
+                    class="btn btn-sm btn-outline-light sidebar-toggle"
+                    (click)="toggleSidebar()"
+                    [attr.title]="isSidebarCollapsed() ? ('ui.expandSidebar' | translate) : ('ui.collapseSidebar' | translate)"
+                    [attr.aria-label]="isSidebarCollapsed() ? ('ui.expandSidebar' | translate) : ('ui.collapseSidebar' | translate)"
+                >
+                    <i class="bi" [ngClass]="isSidebarCollapsed() ? 'bi-chevron-right' : 'bi-chevron-left'"></i>
+                </button>
+            </div>
+        </div>
+        <nav class="sidebar-nav custom-scrollbar overflow-auto flex-grow-1  text-white p ">     
+            <ul class="nav nav-pills flex-column gap-1 ">
+                <li class="nav-item sidebar-item">
+                    <a class="nav-link text-white" [routerLink]="'/admin'">
+                        <i class="fa-solid fa-house"></i>
+                        <span>{{ 'ui.admin.home' | translate }}</span>
+                    </a>
+                </li>
+                <li class="nav-item sidebar-item">
+                    <a class="nav-link text-white" [routerLink]="'/admin/seller'">
+                        <i class="fa-solid fa-store"></i>
+                        <span>{{ 'ui.admin.seller' | translate }}</span>
+                    </a>
+                </li>
+                <li class="nav-item sidebar-item">
+                    <a class="nav-link text-white" [routerLink]="'/admin/user'">
+                        <i class="fa-solid fa-users"></i>
+                        <span>{{ 'ui.admin.user' | translate }}</span>
+                    </a>
+                </li>
+                <li class="nav-item sidebar-item">
+                    <a class="nav-link text-white" [routerLink]="'/admin/category'">
+                        <i class="fa-solid fa-list"></i>
+                        <span>{{ 'ui.admin.category' | translate }}</span>
+                    </a>
+                </li>
+                <!-- <li class="nav-item sidebar-item" >
+                    <a class="nav-link text-white " [routerLink]="'/admin/dashboard'"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+                </li> -->
+                
+            </ul>
+               
+            
+        </nav>
+        <div class="sidebar-footer p-3 border-top border-secondary text-center">
+            <div class="d-flex flex-column align-items-center">
+                <div class="sidebar-avatar rounded-circle mb-2">
+                    <i class="bi bi-person"></i>
+                </div>
+                @if (auth.me$|async; as me) {
+                    <div class="sidebar-footer__text text-white mb-3">
+                        {{me.fullName}}
+                    </div>
+                }
+                <div class="sidebar-logout btn btn-danger">
+                    <button type="button" class="btn btn-danger sidebar-logout__button" (click)="logout()">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span class="sidebar-footer__text">{{ 'ui.logout' | translate }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+    
+    <div class="main-content flex-grow-1 bg-light vh-100 ">
+            <main class="container-fluid">
+                <router-outlet></router-outlet>
+                <app-toast></app-toast>
+            </main>
+    </div>
+</div>

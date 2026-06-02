@@ -1,0 +1,202 @@
+<div class="category-page container-fluid">
+  <div class="page-hero card shadow-sm border-0">
+    <div class="page-hero__left">
+      <div class="page-hero__content">
+        <div class="page-hero__eyebrow">{{ 'ui.admin.adminPanel' | translate }}</div>
+        <h2>{{ 'ui.admin.categoryTreeTitle' | translate }}</h2>
+        <p class="text-muted mb-0">{{ 'ui.admin.categoryTreeSubtitle' | translate }}</p>
+      </div>
+
+      <div class="page-hero__stats">
+        <div class="mini-stat">
+          <span>{{ 'ui.admin.rootCategories' | translate }}</span>
+          <strong>{{ rootCategoryCount }}</strong>
+        </div>
+        <div class="mini-stat mini-stat--accent">
+          <span>{{ 'ui.children' | translate }}</span>
+          <strong>{{ totalCategoryCount - rootCategoryCount }}</strong>
+        </div>
+        <div class="mini-stat">
+          <span>{{ 'ui.admin.totalCategories' | translate }}</span>
+          <strong>{{ totalCategoryCount }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="management-toolbar">
+      <div>
+        <div class="management-toolbar__title">{{ 'ui.admin.categoryTreeTitle' | translate }}</div>
+        <div class="management-toolbar__meta text-muted">
+          {{ totalCategoryCount }} {{ 'ui.children' | translate | lowercase }}
+        </div>
+      </div>
+
+      <button class="btn btn-primary management-toolbar__action" [routerLink]="'/admin/category/create'">
+        <i class="bi bi-plus-lg me-1"></i>
+        {{ 'ui.admin.newRootCategory' | translate }}
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-card card shadow-sm border-0 text-center py-5">
+      <div class="spinner-border" role="status"></div>
+    </div>
+  } @else {
+    @if (category().length === 0) {
+      <div class="empty-state card shadow-sm border-0">
+        <i class="fa-solid fa-sitemap"></i>
+        <h5>{{ 'ui.noCategoriesFound' | translate }}</h5>
+        <p class="text-muted mb-0">{{ 'ui.admin.newRootCategory' | translate }}</p>
+      </div>
+    } @else {
+      <div class="tree-shell card shadow-sm border-0">
+        <div class="tree-shell__header d-flex align-items-center justify-content-between">
+          <div>
+            <h5 class="mb-1">{{ 'ui.admin.categoryTreeTitle' | translate }}</h5>
+            <small class="text-muted">{{ totalCategoryCount }} {{ 'ui.children' | translate | lowercase }}</small>
+          </div>
+          <span class="badge rounded-pill bg-primary-subtle text-primary">{{ rootCategoryCount }} {{ 'ui.admin.rootCategories' | translate | lowercase }}</span>
+        </div>
+
+        <div class="card-body p-0">
+          <ul class="list-group list-group-flush category-tree">
+            @for (c of category(); track c.id) {
+              <ng-container
+                [ngTemplateOutlet]="nodeTpl"
+                [ngTemplateOutletContext]="{ $implicit: c, level: 0 }">
+              </ng-container>
+            }
+          </ul>
+        </div>
+      </div>
+
+      <ng-template #nodeTpl let-node let-level="level">
+        <li class="list-group-item tree-row" [style.--tree-depth]="level">
+          <div class="tree-left">
+            @if (node.children?.length) {
+              <button
+                type="button"
+                class="btn btn-sm btn-link p-0 me-2 tree-toggle"
+                (click)="toogle(node.id)">
+                <span class="chev" [class.open]="isOpen(node.id)">▸</span>
+              </button>
+            } @else {
+              <span class="tree-dot me-2"></span>
+            }
+
+            <div class="tree-title">
+              <div class="tree-title__name">{{ node.name }}</div>
+              <div class="tree-meta text-muted">
+                @if (node.children?.length) {
+                  <span class="badge text-bg-secondary me-2">
+                    {{ node.children.length }} {{ 'ui.children' | translate }}
+                  </span>
+                }
+                <span class="text-muted">id: {{ node.id }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tree-actions btn-group">
+            <button
+              class="btn btn-sm btn-outline-primary"
+              [routerLink]="['/admin/category/create']"
+              [queryParams]="{ parentId: node.id }">
+              + {{ 'ui.childCategory' | translate }}
+            </button>
+
+            <button
+              class="btn btn-sm btn-outline-warning"
+              (click)="openEdit(node)">
+              {{ 'ui.edit' | translate }}
+            </button>
+
+            <button
+              class="btn btn-sm btn-outline-danger"
+              [disabled]="node.children?.length > 0"
+              (click)="openDelete(node)">
+              {{ 'ui.delete' | translate }}
+            </button>
+          </div>
+        </li>
+
+        @if (node.children?.length && isOpen(node.id)) {
+          @for (child of node.children; track child.id) {
+            <ng-container
+              [ngTemplateOutlet]="nodeTpl"
+              [ngTemplateOutletContext]="{ $implicit: child, level: level + 1 }">
+            </ng-container>
+          }
+        }
+      </ng-template>
+    }
+  }
+</div>
+@if (editOpen()) {
+  <div class="modal-backdrop fade show"></div>
+  <div class="modal fade show d-block" tabindex="-1"(click)="closeEdit()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ 'ui.admin.editCategory' | translate }}</h5>
+          <button type="button" class="btn-close" (click)="closeEdit()"></button>
+        </div>
+        <form [formGroup]="editForm" (ngSubmit)="saveEdit()" novalidate>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">{{ 'ui.name' | translate }} <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="name" [class.is-invalid]="editForm.controls.name.touched&&editForm.controls.name.invalid"/>
+              @if (editForm.controls.name.touched&&editForm.controls.name.invalid) {
+                <div class="invalid-feedback d-block">
+                  <span *ngIf="editForm.controls.name.errors?.['required']">{{ 'ui.nameRequired' | translate }}</span>  
+                  <span *ngIf="editForm.controls.name.errors?.['maxlength']">{{ 'ui.nameMaxLength' | translate }}</span >
+                  </div>
+              }
+            </div>
+            <div class="mb-3">
+              <label class="form-label">{{ 'ui.parent' | translate }} </label>
+              <select class="form-select" formControlName="parentId">
+                <option [ngValue]="null">— {{ 'ui.rootNoParent' | translate }} —</option>
+                @for (opt of parentOptions(); track opt.id) {
+                  <option [ngValue]="opt.id" [disabled]="isParentOptionDisables(opt.id)">{{'-'.repeat(opt.level)}} {{opt.label}}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" (click)="closeEdit()">{{ 'ui.cancel' | translate }}</button>
+            <button type="submit" class="btn btn-primary" [disabled]="saving()">
+              @if (saving()) { {{ 'ui.saving' | translate }} } @else { {{ 'ui.save' | translate }} }
+            </button>  
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+@if (deleteOpen()) {
+  <div class="modal-backdrop fade show"></div>
+  <div class="modal fade show d-block" tabindex="-1" (click)="closeDelete()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ 'ui.admin.deleteCategory' | translate }}</h5>
+          <button type="button" class="btn-close" (click)="closeDelete()"></button>
+        </div>
+        <div class="modal-body">
+          <p >{{ 'ui.deleteCategoryConfirm' | translate }} <strong>{{deletingName()}}</strong></p>
+          <div class="text-muted small mt-2">
+            {{ 'ui.deleteCategoryWarning' | translate }}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeDelete()">{{ 'ui.cancel' | translate }}</button>
+          <button type="submit" class="btn btn-danger" (click)="confirmDelete()">
+            @if (deletingBusy()) { {{ 'ui.deleting' | translate }} } @else { {{ 'ui.delete' | translate }} }
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -3,6 +3,8 @@ WebBanHang/appsettings.json
 WebBanHang/appsettings.Development.json
 WebBanHang/bin/
 WebBanHang/obj/
+WebBanHang/Logs/
+WebBanHang/Migrations/
 
 ## --- Frontend (FEWebBanHang) ---
 FEWebBanHang/node_modules/

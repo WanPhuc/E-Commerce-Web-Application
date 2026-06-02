@@ -1,0 +1,150 @@
+<div class="user-page container-fluid">
+    <section class="user-hero">
+        <div class="user-hero__content">
+            <div class="eyebrow">{{ 'ui.admin.adminPanel' | translate }}</div>
+            <h2>{{ 'ui.admin.userListTitle' | translate }}</h2>
+            <p class="mb-0">{{ 'ui.admin.userListDescription' | translate }}</p>
+        </div>
+
+        <div class="user-hero__actions">
+            <button type="button" class="btn btn-outline-light" (click)="loadData()">
+                <i class="bi bi-arrow-clockwise me-1"></i>
+                {{ 'common.refresh' | translate }}
+            </button>
+        </div>
+    </section>
+
+    <section class="user-stats row g-3">
+        <div class="col-12 col-sm-6 col-xxl-3">
+            <div class="stat-card stat-card--primary">
+                <span>{{ 'ui.admin.totalUsers' | translate }}</span>
+                <strong>{{ totalUsers() }}</strong>
+                <small>{{ 'ui.admin.totalUsersNote' | translate }}</small>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xxl-3">
+            <div class="stat-card stat-card--success">
+                <span>{{ 'ui.admin.activeUsers' | translate }}</span>
+                <strong>{{ activeUsers() }}</strong>
+                <small>{{ 'ui.admin.activeUsersNote' | translate }}</small>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xxl-3">
+            <div class="stat-card stat-card--warning">
+                <span>{{ 'ui.admin.blockedUsers' | translate }}</span>
+                <strong>{{ blockedUsers() }}</strong>
+                <small>{{ 'ui.admin.blockedUsersNote' | translate }}</small>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xxl-3">
+            <div class="stat-card stat-card--accent">
+                <span>{{ 'ui.admin.sellerUsers' | translate }}</span>
+                <strong>{{ sellerUsers() }}</strong>
+                <small>{{ 'ui.admin.sellerUsersNote' | translate }}</small>
+            </div>
+        </div>
+    </section>
+
+    <section class="user-toolbar card shadow-sm border-0">
+        <div class="card-body">
+            <div class="d-flex flex-column flex-lg-row gap-3 align-items-lg-end justify-content-between">
+                <div>
+                    <h5 class="mb-1">{{ 'ui.search' | translate }}</h5>
+                    <p class="text-muted mb-0">{{ 'ui.admin.userSearchHint' | translate }}</p>
+                </div>
+
+                <div class="user-search">
+                    <i class="bi bi-search"></i>
+                    <input
+                        type="search"
+                        class="form-control"
+                        [placeholder]="'common.search' | translate" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @if (loading()) {
+        <div class="loading-panel card shadow-sm border-0 text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">{{ 'common.loading' | translate }}</span>
+            </div>
+        </div>
+    } @else {
+        @if (users().length === 0) {
+            <div class="empty-state card shadow-sm border-0">
+                <i class="fa-solid fa-user-slash"></i>
+                <h5>{{ 'ui.admin.noUsersFound' | translate }}</h5>
+                <p class="text-muted mb-0">{{ 'ui.admin.reloadUsersHint' | translate }}</p>
+            </div>
+        } @else {
+            <div class="user-grid row g-4">
+                @for (u of users(); track u.id; let i = $index) {
+                    <div class="col-12 col-xxl-6">
+                        <article class="user-card card shadow-sm border-0 h-100">
+                            <div class="card-body">
+                                <div class="user-card__header">
+                                    <div class="user-avatar">
+                                        {{ u.fullName.charAt(0) || 'U' }}
+                                    </div>
+
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex flex-wrap gap-2 align-items-center mb-1">
+                                            <h5 class="mb-0">{{ u.fullName }}</h5>
+                                            <span class="badge text-bg-light text-uppercase">#{{ i + 1 }}</span>
+                                        </div>
+                                        <div class="text-muted small">{{ u.email }}</div>
+                                    </div>
+
+                                    <button class="btn btn-sm btn-outline-primary" [routerLink]="['/admin/user/detail', u.id]">
+                                        <i class="bi bi-eye me-1"></i>
+                                        {{ 'ui.viewDetail' | translate }}
+                                    </button>
+                                </div>
+
+                                <div class="user-meta">
+                                    <div class="meta-item">
+                                        <span>{{ 'ui.userId' | translate }}</span>
+                                        <strong>{{ u.id }}</strong>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span>{{ 'ui.createdAt' | translate }}</span>
+                                        <strong>{{ u.createdAt | date:'yyyy-MM-dd HH:mm:ss' }}</strong>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span>{{ 'ui.role' | translate }}</span>
+                                        <strong>{{ u.role }}</strong>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span>{{ 'ui.isSeller' | translate }}</span>
+                                        <strong>
+                                            @if (u.seller) {
+                                                {{ 'ui.yes' | translate }}
+                                            } @else {
+                                                {{ 'ui.no' | translate }}
+                                            }
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <div class="user-badges">
+                                    @if (u.isActive) {
+                                        <span class="badge rounded-pill bg-success-subtle text-success-emphasis">{{ 'ui.active' | translate }}</span>
+                                    } @else {
+                                        <span class="badge rounded-pill bg-danger-subtle text-danger-emphasis">{{ 'ui.inactive' | translate }}</span>
+                                    }
+
+                                    <span class="badge rounded-pill bg-info-subtle text-info-emphasis">{{ u.role }}</span>
+
+                                    @if (u.seller) {
+                                        <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis">{{ u.seller.shopName }}</span>
+                                    }
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>

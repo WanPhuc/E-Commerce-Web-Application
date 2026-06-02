@@ -1,0 +1,81 @@
+<div class="container-fluid">
+    <button class="btn btn-secondary" [routerLink]="'/admin/user'">{{ 'ui.back' | translate }}</button>
+    @if (loading()) {
+        <div class="text-center my-5"><div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">{{ 'ui.loading' | translate }}</span>
+        </div>
+        </div>
+    }
+    <div class="container-card">
+        @if (!loading()&&userDetail()) {
+            <div class="card ">
+                <div class="text-center">
+                    <h4>{{ 'ui.userDetailTitle' | translate }}</h4>  
+                </div>                
+                <div class="card-body">
+                    <div class="card-detail">
+                        <div>
+                            <b>{{ 'ui.id' | translate }} :</b>
+                            <span>{{userDetail()!.id}}</span>
+                        </div>
+                        <div>
+                            <b>{{ 'ui.fullName' | translate }} :</b>
+                            <span>{{userDetail()!.fullName}}</span>
+                        </div>
+                        <div>
+                            <b>{{ 'ui.emailLabel' | translate }} :</b>
+                            <span>{{userDetail()!.email}}</span>
+                        </div>
+                        <div>
+                            <b>{{ 'ui.createdAt' | translate }} :</b>
+                            <span>{{userDetail()!.createdAt|date:'yyyy-MM-dd HH:mm:ss'}}</span>
+                        </div>
+                        <div>
+                            <b>{{ 'ui.role' | translate }} :</b>
+                            <span>{{userDetail()!.role}}</span>
+                        </div>
+                        <div>
+                            <b>{{ 'ui.isActive' | translate }} :</b>
+                            @if (userDetail()?.isActive) {
+                                <span class="badge bg-success">{{ 'ui.yes' | translate }}</span>
+                            }@else {
+                                <span class="badge bg-secondary">{{ 'ui.no' | translate }}</span>
+                            }
+                        </div>
+                        
+                        @if (userDetail()?.seller) {
+                            <div>
+                                <b>{{ 'ui.isSeller' | translate }} :</b>
+                                <span class="badge bg-success">{{ 'ui.yes' | translate }}</span>
+                            </div>
+                            <div class="seller">
+                                <div>
+                                    <b>{{ 'ui.sellerId' | translate }} :</b>
+                                    <span>{{userDetail()!.seller?.id}}</span>
+                                </div>
+                                <div>
+                                    <b>{{ 'ui.shopName' | translate }} :</b>
+                                    <span>{{userDetail()!.seller?.shopName}}</span>
+                                </div>
+                                <div>
+                                    <b>{{ 'ui.sellerStatus' | translate }} :</b>
+                                    <span>{{userDetail()!.seller?.status|status}}</span>
+                                </div>
+                            </div>
+                        }@else{
+                            <div>
+                                <b>{{ 'ui.isSeller' | translate }} :</b>
+                                <span class="badge bg-secondary">{{ 'ui.no' | translate }}</span>
+                            </div>
+                        }
+                            
+                    </div>
+                    <div class="mt-5">
+                        <button class="btn btn-danger">{{ 'ui.lock' | translate }}</button>
+                    </div>
+                </div>
+            </div>
+        }
+        
+    </div>
+</div>
