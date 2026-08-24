@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using WebBanHang.Extensions;
 using WebBanHang.Helpers;
-using WebBanHang.Migrations;
 using WebBanHang.Models;
 using WebBanHang.Models.Common;
 using WebBanHang.Models.DTOs.Sellers;

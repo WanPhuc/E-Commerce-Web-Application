@@ -1,0 +1,8 @@
+bin
+obj
+Logs
+artifacts
+DockerFile
+.git
+.gitignore
+

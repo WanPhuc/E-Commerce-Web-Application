@@ -105,5 +105,11 @@ public partial class AppDbContext : DbContext
             .WithMany(pr=>pr.Reviews)
             .HasForeignKey(p=>p.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Notification>()
+            .HasOne(n => n.User)
+            .WithMany(u => u.Notifications)
+            .HasForeignKey(n => n.ReceiverId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -124,10 +124,19 @@ builder.Services.AddSignalR();
 
 
 
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>()
+    ?? (builder.Configuration["AllowedOrigins"] ?? "")
+        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+if (allowedOrigins.Length == 0)
+{
+    allowedOrigins = ["http://localhost:4200", "https://localhost:4200"];
+}
+
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("angular", p => p
-    .WithOrigins("http://localhost:4200", "https://localhost:4200")
+    .WithOrigins(allowedOrigins)
     .AllowAnyHeader()
     .AllowAnyMethod()
     .AllowCredentials());
@@ -165,8 +174,14 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.EnsureCreatedAsync();
     await RoleSeeder.SeedAsync(db);
     await UserSeeder.SeedAsync(db);
+
+    if (builder.Configuration.GetValue<bool>("DemoSeed:Enabled"))
+    {
+        await DemoDataSeeder.SeedAsync(db);
+    }
 }
 if (app.Environment.IsDevelopment())
 {

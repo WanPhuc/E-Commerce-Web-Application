@@ -1,4 +1,3 @@
-using WebBanHang.Migrations;
 using WebBanHang.Models.Enums;
 
 namespace WebBanHang.Models.DTOs.Sellers.Revenue;

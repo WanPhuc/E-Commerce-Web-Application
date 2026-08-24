@@ -1,5 +1,4 @@
 using WebBanHang.Extensions;
-using WebBanHang.Migrations;
 using WebBanHang.Models;
 using WebBanHang.Models.Common;
 using WebBanHang.Models.EntityModels;

@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using WebBanHang.Data;
-using WebBanHang.Migrations;
 using WebBanHang.Models.Common;
 using WebBanHang.Models.DTOs.Sellers;
 using WebBanHang.Models.Enums;
@@ -28,7 +27,7 @@ public class SellerDashboardService : ISellerDashboardService
             return ApiResponse<SellerDashboardDto>.Fail("Seller not found", 404, ErrorCodes.Seller.NotFound);
         var sellerId = seller.Id;
         var now = DateTime.UtcNow;
-        var thisMonthStart = new DateTime(now.Year, now.Month, 1);
+        var thisMonthStart = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var lastMonthStart = thisMonthStart.AddMonths(-1);
         var toDay = now.Date;
 
@@ -158,9 +157,9 @@ public class SellerDashboardService : ISellerDashboardService
         if (ranger == ChartRanger.Week)
             start = now.Date.AddDays(-6);
         else if (ranger == ChartRanger.Month)
-            start = new DateTime(now.Year, now.Month, 1);
+            start = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         else if (ranger == ChartRanger.Year)
-            start = new DateTime(now.Year, 1, 1);
+            start = new DateTime(now.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         else
             start = now.Date.AddDays(-6);
 

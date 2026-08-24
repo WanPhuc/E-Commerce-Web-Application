@@ -20,9 +20,7 @@ namespace WebBanHang
         {
             services.AddDbContext<AppDbContext>(options =>
             {
-                options.UseSqlServer(
-                    configuration.GetConnectionString("SqlServerConnection")
-                );
+                options.UseNpgsql(configuration.GetConnectionString("PostgresConnection"));
 
                 if (environment.IsDevelopment())
                 {
@@ -37,6 +35,7 @@ namespace WebBanHang
             services.AddScoped<IAuthService, AuthService>();
             services.AddSingleton<ICacheService, CacheService>();
             services.AddScoped<FileHelper>();
+            services.AddHttpClient<ISupabaseStorageService, SupabaseStorageService>();
             #endregion
 
             #region Service

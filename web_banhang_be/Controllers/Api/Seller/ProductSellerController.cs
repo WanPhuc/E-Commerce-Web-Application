@@ -15,9 +15,12 @@ namespace WebBanHang.Controllers.Api.Seller;
 public class ProductSellerController : BaseController
 {
     private readonly IProductSellerService _productSellerService;
-    public ProductSellerController(IProductSellerService productSellerService)
+    private readonly ISupabaseStorageService _supabaseStorageService;
+
+    public ProductSellerController(IProductSellerService productSellerService, ISupabaseStorageService supabaseStorageService)
     {
         _productSellerService = productSellerService;
+        _supabaseStorageService = supabaseStorageService;
     }
     [HttpGet]
     public async Task<IActionResult> GetAllProducts([FromQuery] PagedRequest request)
@@ -59,6 +62,24 @@ public class ProductSellerController : BaseController
 
 
     //////////////#ProductImage///////////////////
+    [HttpPost("images/upload")]
+    public async Task<IActionResult> UploadProductImage(IFormFile file, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var imageUrl = await _supabaseStorageService.UploadProductImageAsync(file, cancellationToken);
+            return BaseResult(ApiResponse<string>.Success(imageUrl, "Product image uploaded successfully", 201, SuccessCodes.Product.ImageUploaded));
+        }
+        catch (ArgumentException ex)
+        {
+            return BaseResult(ApiResponse<string>.Fail(ex.Message, 400, ErrorCodes.Validation.InvalidFormat));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BaseResult(ApiResponse<string>.Fail(ex.Message, 400, ErrorCodes.Common.BadRequest));
+        }
+    }
+
     [HttpPost("{productId:guid}/images")]
     public async Task<IActionResult> AddProductImage(Guid productId, [FromBody] ProductImageCreateDto dto)
     {

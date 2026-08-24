@@ -15,7 +15,7 @@ public static class UserSeeder
             FullName="admin",
             Email="admin@gmail.com",
             PasswordHash=PasswordHelper.HashPassword("admin123"),
-            CreatedAt=DateTime.Now,
+            CreatedAt=DateTime.UtcNow,
             IsActive=true,
             RoleId=adminRole.Id
         };

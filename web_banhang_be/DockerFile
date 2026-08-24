@@ -1,21 +1,19 @@
 # Giai đoạn 1: Build code
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
-WORKDIR /app
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build-env
+WORKDIR /src
 
-# Copy các file dự án và restore (tách riêng để tận dụng cache của Docker)
-COPY *.sln ./
-COPY *.csproj ./
-RUN dotnet restore
+# Copy project file trước để tận dụng cache restore
+COPY WebBanHang.csproj ./
+RUN dotnet restore ./WebBanHang.csproj
 
-# Copy toàn bộ code và build
+# Copy toàn bộ source và publish
 COPY . ./
-RUN dotnet publish -c Release -o out
+RUN dotnet publish ./WebBanHang.csproj -c Release -o /app/publish /p:UseAppHost=false
 
 # Giai đoạn 2: Chạy code
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
-COPY --from=build-env /app/out .
+COPY --from=build-env /app/publish .
 
-# Cổng mặc định của .NET 8 là 8080 (hoặc bạn có thể đổi)
 EXPOSE 8080
-ENTRYPOINT ["dotnet", "YourProjectName.dll"]
+ENTRYPOINT ["dotnet", "WebBanHang.dll"]

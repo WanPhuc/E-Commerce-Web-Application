@@ -65,6 +65,7 @@ public static class SuccessCodes
         public const string Deleted = "PRODUCT_DELETED";
         public const string StatusChanged = "PRODUCT_STATUS_CHANGED";
         public const string ImageAdded = "PRODUCT_IMAGE_ADDED";
+        public const string ImageUploaded = "PRODUCT_IMAGE_UPLOADED";
         public const string ImageUpdated = "PRODUCT_IMAGE_UPDATED";
         public const string ImageDeleted = "PRODUCT_IMAGE_DELETED";
         public const string MainImageSet = "PRODUCT_MAIN_IMAGE_SET";

@@ -31,7 +31,7 @@ public class SellerRevenueService : ISellerRevenueService
             return ApiResponse<SellerRevenueDto>.Fail("Seller not found", 404, ErrorCodes.Seller.NotFound);
         var sellerId = seller.Id;
         var now = DateTime.UtcNow;
-        var thisMonthStart = new DateTime(now.Year, now.Month, 1);
+        var thisMonthStart = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
 
 
         var totalRevenueAll = await _db.Orders.AsNoTracking().Where(o => o.SellerId == sellerId && o.PaidAt != null && (o.Status == OrderStatus.Completed)).SumAsync(o => (decimal?)o.TotalAmount, ct);
@@ -80,11 +80,11 @@ public class SellerRevenueService : ISellerRevenueService
         }
         else if (range == ChartRanger.Month)
         {
-            start = new DateTime(now.Year, now.Month, 1);
+            start = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         }
         else if (range == ChartRanger.Year)
         {
-            start = new DateTime(now.Year, 1, 1);
+            start = new DateTime(now.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         }
         else
         {

@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using WebBanHang.Data;
-using WebBanHang.Migrations;
 using WebBanHang.Models;
 using WebBanHang.Models.Common;
 using WebBanHang.Models.Enums;
@@ -14,7 +13,7 @@ public class AdminService : IAdminService
     public async Task<ApiResponse<AdminDashboardDto>> GetDashboardStatsAsync(CancellationToken ct = default)
     {
         var now = DateTime.UtcNow;
-        var thisMonthStart = new DateTime(now.Year, now.Month, 1);
+        var thisMonthStart = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
 
         var totalProducts = await _db.Products.AsNoTracking().CountAsync(ct);
 
@@ -136,7 +135,7 @@ public class AdminService : IAdminService
         else if (range == DashboardRanger.Month)
         {
             var year = now.Year;
-            var yearStart = new DateTime(year, 1, 1);
+            var yearStart = new DateTime(year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var nextYearStart = yearStart.AddYears(1);
 
             // BASELINE: ALL TIME trước 1/1 năm nay
@@ -206,8 +205,8 @@ public class AdminService : IAdminService
             var endYear = now.Year;
             var startYear = endYear - 4;
 
-            var startUtc = new DateTime(startYear, 1, 1);
-            var endUtc = new DateTime(endYear + 1, 1, 1);
+            var startUtc = new DateTime(startYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var endUtc = new DateTime(endYear + 1, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
             //BaseLine
 
