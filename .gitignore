@@ -1,12 +1,63 @@
-## --- Backend (WebBanHang) ---
-WebBanHang/appsettings.json
-WebBanHang/appsettings.Development.json
-WebBanHang/bin/
-WebBanHang/obj/
-WebBanHang/Logs/
-WebBanHang/Migrations/
+# ==============================================================================
+# Shoppy Monorepo - Root .gitignore
+# Structure:
+#   Shoppy/
+#   ├── SourceCode/
+#   │   ├── web_banhang/       (Docker entrypoint)
+#   │   ├── web_banhang_be/    (.NET Microservices)
+#   │   └── web_banhang_fe/    (Angular Frontend)
+#   └── Documents/
+# ==============================================================================
 
-## --- Frontend (FEWebBanHang) ---
-FEWebBanHang/node_modules/
-FEWebBanHang/dist/
-FEWebBanHang/.env
+# --- Environment files (sensitive - NEVER commit) ---
+.env
+.env.*
+!.env.example
+!.env.prod.example
+
+# --- OS Files ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- IDE & Editors ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.suo
+*.user
+
+# ==============================================================================
+# Backend (SourceCode/web_banhang_be) - .NET / C#
+# ==============================================================================
+SourceCode/web_banhang_be/**/bin/
+SourceCode/web_banhang_be/**/obj/
+SourceCode/web_banhang_be/**/.vs/
+SourceCode/web_banhang_be/**/Logs/
+SourceCode/web_banhang_be/**/TestResults/
+SourceCode/web_banhang_be/**/*.user
+SourceCode/web_banhang_be/**/*.userosscache
+SourceCode/web_banhang_be/**/*.sln.docstates
+SourceCode/web_banhang_be/**/appsettings.json
+SourceCode/web_banhang_be/**/appsettings.Development.json
+SourceCode/web_banhang_be/**/appsettings.Production.json
+
+# ==============================================================================
+# Frontend (SourceCode/web_banhang_fe) - Angular
+# ==============================================================================
+SourceCode/web_banhang_fe/node_modules/
+SourceCode/web_banhang_fe/dist/
+SourceCode/web_banhang_fe/.angular/cache/
+SourceCode/web_banhang_fe/coverage/
+SourceCode/web_banhang_fe/npm-debug.log*
+SourceCode/web_banhang_fe/yarn-error.log
+
+# ==============================================================================
+# Docker volumes (nếu mount local)
+# ==============================================================================
+**/pgdata/
+**/redis-data/
+**/rabbitmq-data/

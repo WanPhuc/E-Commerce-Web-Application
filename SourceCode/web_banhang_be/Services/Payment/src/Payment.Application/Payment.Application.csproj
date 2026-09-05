@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AuraMart.Payment.Application</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Payment.Domain\Payment.Domain.csproj" />
+    <ProjectReference Include="..\Payment.Contracts\Payment.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\..\BuildingBlocks\VanFucVN.Core.Common\VanFucVN.Core.Common.csproj" />
+    <ProjectReference Include="..\..\..\..\Shared\AuraMart.Shared\AuraMart.Shared.csproj" />
+  </ItemGroup>
+</Project>

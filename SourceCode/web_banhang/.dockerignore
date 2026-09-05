@@ -1,0 +1,15 @@
+# ==============================================================================
+# web_banhang/ - .dockerignore
+# (Thư mục chứa docker-compose chính)
+# ==============================================================================
+
+# --- Secrets (inject via --env-file) ---
+.env
+.env.*
+
+# --- Git ---
+.git/
+.gitignore
+
+# --- README ---
+README.md

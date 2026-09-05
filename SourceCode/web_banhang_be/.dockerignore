@@ -1,0 +1,50 @@
+## ==============================================================================
+## web_banhang_be/ - .dockerignore
+## Exclude files not needed in Docker build context
+## ==============================================================================
+
+## --- Build artifacts (rebuild inside Docker) ---
+**/bin/
+**/obj/
+**/artifacts/
+
+## --- Logs ---
+**/Logs/
+**/*.log
+
+## --- Test projects (không cần trong production image) ---
+**/tests/
+**/*.Tests/
+**/*.UnitTests/
+**/*.IntegrationTests/
+**/TestResults/
+
+## --- IDE & Editor ---
+.vs/
+.vscode/
+**/*.user
+**/*.suo
+
+## --- Git ---
+.git/
+.gitignore
+**/.gitignore
+
+## --- Environment & Secrets (inject via docker-compose) ---
+.env
+.env.*
+**/appsettings.Development.json
+**/appsettings.Production.json
+
+## --- Scripts (chỉ dùng local) ---
+*.ps1
+*.sh
+
+## --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## --- Documentation ---
+README.md
+docs/

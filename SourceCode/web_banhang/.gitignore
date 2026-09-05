@@ -1,0 +1,14 @@
+# ==============================================================================
+# web_banhang/ - Docker entrypoint folder .gitignore
+# (Đây là thư mục chứa docker-compose chính để chạy toàn bộ stack)
+# ==============================================================================
+
+# --- Environment files (NEVER commit secrets) ---
+.env
+.env.*
+!.env.example
+!.env.prod.example
+
+# --- OS Files ---
+.DS_Store
+Thumbs.db

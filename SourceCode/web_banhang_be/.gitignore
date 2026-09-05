@@ -1,0 +1,46 @@
+## ==============================================================================
+## web_banhang_be/ - .NET Microservices .gitignore
+## ==============================================================================
+
+## --- Build Artifacts ---
+[Bb]in/
+[Oo]bj/
+artifacts/
+*.nupkg
+
+## --- Visual Studio ---
+.vs/
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+.vscode/
+
+## --- Runtime Logs & Data ---
+Logs/
+*.log
+
+## --- EF Core Migrations (tùy chọn: bỏ comment nếu không muốn commit migrations) ---
+# Migrations/
+
+## --- App Settings (sensitive - không commit secrets) ---
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+
+## --- Environment files ---
+.env
+.env.*
+!.env.example
+
+## --- Test Results ---
+TestResults/
+coverage/
+*.trx
+*.coveragexml
+
+## --- OS Files ---
+.DS_Store
+Thumbs.db
+desktop.ini

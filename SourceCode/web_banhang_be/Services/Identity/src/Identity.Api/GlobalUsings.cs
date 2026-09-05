@@ -1,0 +1,17 @@
+﻿global using AuraMart.Identity.Domain;
+global using AuraMart.Identity.Domain.Repositories;
+global using AuraMart.Identity.Infrastructure;
+global using AuraMart.Identity.Infrastructure.Persistence;
+global using AuraMart.Identity.Application;
+global using AuraMart.Identity.Contracts;
+global using VanFucVN.Core.Persistence.Domain;
+global using VanFucVN.Core.Persistence.Repositories;
+global using VanFucVN.Core.Common.DTOs;
+global using VanFucVN.Core.Common.Constants;
+global using VanFucVN.Core.Common.Services;
+global using VanFucVN.Core.Common.Extensions;
+global using VanFucVN.Core.Web.Controllers;
+global using VanFucVN.Core.Web.Middlewares;
+global using VanFucVN.Core.Web.Filters;
+global using AuraMart.Shared.Constants;
+global using AuraMart.Shared.Seed;

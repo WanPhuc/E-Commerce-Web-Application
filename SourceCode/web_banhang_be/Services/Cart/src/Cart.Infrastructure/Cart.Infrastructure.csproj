@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AuraMart.Cart.Infrastructure</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Cart.Application\Cart.Application.csproj" />
+    <ProjectReference Include="..\Cart.Domain\Cart.Domain.csproj" />
+    <ProjectReference Include="..\Cart.Contracts\Cart.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\..\BuildingBlocks\VanFucVN.Core.Persistence\VanFucVN.Core.Persistence.csproj" />
+    <ProjectReference Include="..\..\..\..\BuildingBlocks\VanFucVN.Core.Messaging\VanFucVN.Core.Messaging.csproj" />
+    <ProjectReference Include="..\..\..\..\BuildingBlocks\VanFucVN.Core.Common\VanFucVN.Core.Common.csproj" />
+    <ProjectReference Include="..\..\..\..\Shared\AuraMart.Shared\AuraMart.Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.*" />
+    <PackageReference Include="RabbitMQ.Client" Version="7.*" />
+  </ItemGroup>
+</Project>

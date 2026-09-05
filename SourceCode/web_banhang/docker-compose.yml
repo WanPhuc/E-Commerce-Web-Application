@@ -1,0 +1,353 @@
+name: auramart
+
+x-jwt-demo: &jwt-demo
+  JwtSettings__SecretKey: ${JWT_SECRET_KEY:-auramart-dev-jwt-secret-key-32chars!!}
+  JwtSettings__Issuer: ${JWT_ISSUER:-AuraMart}
+  JwtSettings__Audience: ${JWT_AUDIENCE:-AuraMart}
+  JwtSettings__ExpirationMinutes: "${JWT_EXPIRATION_MINUTES:-60}"
+  JwtSettings__RefreshTokenExpirationDays: "${JWT_REFRESH_DAYS:-7}"
+  DemoSeed__Enabled: "${DEMO_SEED_ENABLED:-true}"
+  InternalApi__Key: ${INTERNAL_API_KEY:-dev-internal-key}
+
+services:
+  # ===== Frontend Application =====
+  fe:
+    build:
+      context: ../web_banhang_fe
+      dockerfile: Dockerfile
+    container_name: auramart-fe
+    restart: unless-stopped
+    ports:
+      - "${FE_PORT:-4200}:80"
+    depends_on:
+      - gateway
+
+  # ===== API Gateway (YARP) =====
+  gateway:
+    build:
+      context: ../web_banhang_be
+      dockerfile: Gateway/Dockerfile
+    container_name: auramart-gateway
+    restart: unless-stopped
+    ports:
+      - "${GATEWAY_PORT:-8080}:8080"
+    networks:
+      default:
+        aliases:
+          - api
+          - gateway
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - IdentityApi__BaseUrl=http://identity-api:8080
+      - CatalogApi__BaseUrl=http://catalog-api:8080
+      - CartApi__BaseUrl=http://cart-api:8080
+      - OrderingApi__BaseUrl=http://ordering-api:8080
+      - PaymentApi__BaseUrl=http://payment-api:8080
+      - SellerApi__BaseUrl=http://seller-api:8080
+      - NotificationApi__BaseUrl=http://notification-api:8080
+      - InternalApi__Key=${INTERNAL_API_KEY:-dev-internal-key}
+    depends_on:
+      - identity-api
+      - catalog-api
+      - cart-api
+      - ordering-api
+      - payment-api
+      - seller-api
+      - notification-api
+
+  # ===== Microservices =====
+  identity-api:
+    build:
+      context: ../web_banhang_be
+      dockerfile: Services/Identity/Dockerfile
+    container_name: auramart-identity-api
+    restart: unless-stopped
+    ports:
+      - "${IDENTITY_PORT:-8081}:8080"
+    environment:
+      <<: *jwt-demo
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__IdentityConnection: Host=identity-db;Database=identity_db;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres};
+      ASPNETCORE_URLS: http://+:8080
+      Redis__ConnectionString: redis:6379
+    depends_on:
+      - identity-db
+      - redis
+
+  catalog-api:
+    build:
+      context: ../web_banhang_be
+      dockerfile: Services/Catalog/Dockerfile
+    container_name: auramart-catalog-api
+    restart: unless-stopped
+    ports:
+      - "${CATALOG_PORT:-8082}:8080"
+    environment:
+      <<: *jwt-demo
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__CatalogConnection: Host=catalog-db;Database=catalog_db;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres};
+      ASPNETCORE_URLS: http://+:8080
+      IdentityApi__BaseUrl: http://identity-api:8080
+      Redis__ConnectionString: redis:6379
+      RabbitMQ__HostName: rabbitmq
+      RabbitMQ__Port: "5672"
+      RabbitMQ__UserName: ${RABBITMQ_USER:-guest}
+      RabbitMQ__Password: ${RABBITMQ_PASS:-guest}
+    depends_on:
+      - catalog-db
+      - redis
+      - rabbitmq
+
+  cart-api:
+    build:
+      context: ../web_banhang_be
+      dockerfile: Services/Cart/Dockerfile
+    container_name: auramart-cart-api
+    restart: unless-stopped
+    ports:
+      - "${CART_PORT:-8083}:8080"
+    environment:
+      <<: *jwt-demo
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__CartConnection: Host=cart-db;Database=cart_db;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres};
+      ASPNETCORE_URLS: http://+:8080
+      Redis__ConnectionString: redis:6379
+      IdentityApi__BaseUrl: http://identity-api:8080
+    depends_on:
+      - cart-db
+      - redis
+
+  ordering-api:
+    build:
+      context: ../web_banhang_be
+      dockerfile: Services/Ordering/Dockerfile
+    container_name: auramart-ordering-api
+    restart: unless-stopped
+    ports:
+      - "${ORDERING_PORT:-8084}:8080"
+    environment:
+      <<: *jwt-demo
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__OrderingConnection: Host=ordering-db;Database=ordering_db;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres};
+      ASPNETCORE_URLS: http://+:8080
+      IdentityApi__BaseUrl: http://identity-api:8080
+      CatalogApi__BaseUrl: http://catalog-api:8080
+      Redis__ConnectionString: redis:6379
+      RabbitMQ__HostName: rabbitmq
+      RabbitMQ__Port: "5672"
+      RabbitMQ__UserName: ${RABBITMQ_USER:-guest}
+      RabbitMQ__Password: ${RABBITMQ_PASS:-guest}
+    depends_on:
+      - ordering-db
+      - redis
+      - rabbitmq
+
+  payment-api:
+    build:
+      context: ../web_banhang_be
+      dockerfile: Services/Payment/Dockerfile
+    container_name: auramart-payment-api
+    restart: unless-stopped
+    ports:
+      - "${PAYMENT_PORT:-8086}:8080"
+    environment:
+      <<: *jwt-demo
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__PaymentConnection: Host=payment-db;Database=payment_db;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres};
+      ASPNETCORE_URLS: http://+:8080
+      IdentityApi__BaseUrl: http://identity-api:8080
+      Redis__ConnectionString: redis:6379
+      RabbitMQ__HostName: rabbitmq
+      RabbitMQ__Port: "5672"
+      RabbitMQ__UserName: ${RABBITMQ_USER:-guest}
+      RabbitMQ__Password: ${RABBITMQ_PASS:-guest}
+    depends_on:
+      - payment-db
+      - redis
+      - rabbitmq
+
+  seller-api:
+    build:
+      context: ../web_banhang_be
+      dockerfile: Services/Seller/Dockerfile
+    container_name: auramart-seller-api
+    restart: unless-stopped
+    ports:
+      - "${SELLER_PORT:-8088}:8080"
+    environment:
+      <<: *jwt-demo
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__SellerConnection: Host=seller-db;Database=seller_db;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres};
+      ASPNETCORE_URLS: http://+:8080
+      IdentityApi__BaseUrl: http://identity-api:8080
+      CatalogApi__BaseUrl: http://catalog-api:8080
+      Redis__ConnectionString: redis:6379
+      RabbitMQ__HostName: rabbitmq
+      RabbitMQ__Port: "5672"
+      RabbitMQ__UserName: ${RABBITMQ_USER:-guest}
+      RabbitMQ__Password: ${RABBITMQ_PASS:-guest}
+    depends_on:
+      - seller-db
+      - redis
+      - rabbitmq
+
+  notification-api:
+    build:
+      context: ../web_banhang_be
+      dockerfile: Services/Notification/Dockerfile
+    container_name: auramart-notification-api
+    restart: unless-stopped
+    ports:
+      - "${NOTIFICATION_PORT:-8085}:8080"
+    environment:
+      <<: *jwt-demo
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__NotificationConnection: Host=notification-db;Database=notification_db;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres};
+      ASPNETCORE_URLS: http://+:8080
+      IdentityApi__BaseUrl: http://identity-api:8080
+      Redis__ConnectionString: redis:6379
+      RabbitMQ__HostName: rabbitmq
+      RabbitMQ__Port: "5672"
+      RabbitMQ__UserName: ${RABBITMQ_USER:-guest}
+      RabbitMQ__Password: ${RABBITMQ_PASS:-guest}
+    depends_on:
+      - notification-db
+      - redis
+      - rabbitmq
+
+  # ===== Databases (PostgreSQL per Service) =====
+  identity-db:
+    image: postgres:16-alpine
+    container_name: auramart-identity-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: identity_db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${IDENTITY_DB_PORT:-5433}:5432"
+    volumes:
+      - identity-db-data:/var/lib/postgresql/data
+
+  catalog-db:
+    image: postgres:16-alpine
+    container_name: auramart-catalog-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: catalog_db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${CATALOG_DB_PORT:-5434}:5432"
+    volumes:
+      - catalog-db-data:/var/lib/postgresql/data
+
+  ordering-db:
+    image: postgres:16-alpine
+    container_name: auramart-ordering-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ordering_db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${ORDERING_DB_PORT:-5435}:5432"
+    volumes:
+      - ordering-db-data:/var/lib/postgresql/data
+
+  payment-db:
+    image: postgres:16-alpine
+    container_name: auramart-payment-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: payment_db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${PAYMENT_DB_PORT:-5436}:5432"
+    volumes:
+      - payment-db-data:/var/lib/postgresql/data
+
+  seller-db:
+    image: postgres:16-alpine
+    container_name: auramart-seller-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: seller_db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${SELLER_DB_PORT:-5437}:5432"
+    volumes:
+      - seller-db-data:/var/lib/postgresql/data
+
+  cart-db:
+    image: postgres:16-alpine
+    container_name: auramart-cart-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cart_db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${CART_DB_PORT:-5432}:5432"
+    volumes:
+      - cart-db-data:/var/lib/postgresql/data
+
+  notification-db:
+    image: postgres:16-alpine
+    container_name: auramart-notification-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: notification_db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${NOTIFICATION_DB_PORT:-5438}:5432"
+    volumes:
+      - notification-db-data:/var/lib/postgresql/data
+
+  # ===== Infrastructure Services =====
+  redis:
+    image: redis:7-alpine
+    container_name: auramart-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: auramart-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MGMT_PORT:-15672}:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-guest}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  identity-db-data:
+  catalog-db-data:
+  ordering-db-data:
+  payment-db-data:
+  seller-db-data:
+  cart-db-data:
+  notification-db-data:
+  redis-data:
+  rabbitmq-data:

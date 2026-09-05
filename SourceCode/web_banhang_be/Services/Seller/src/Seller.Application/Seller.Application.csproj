@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AuraMart.Seller.Application</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Seller.Domain\Seller.Domain.csproj" />
+    <ProjectReference Include="..\Seller.Contracts\Seller.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\..\BuildingBlocks\VanFucVN.Core.Common\VanFucVN.Core.Common.csproj" />
+    <ProjectReference Include="..\..\..\..\Shared\AuraMart.Shared\AuraMart.Shared.csproj" />
+  </ItemGroup>
+</Project>

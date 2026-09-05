@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AuraMart.Identity.Application</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.*" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Identity.Domain\Identity.Domain.csproj" />
+    <ProjectReference Include="..\Identity.Contracts\Identity.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\..\BuildingBlocks\VanFucVN.Core.Common\VanFucVN.Core.Common.csproj" />
+    <ProjectReference Include="..\..\..\..\Shared\AuraMart.Shared\AuraMart.Shared.csproj" />
+  </ItemGroup>
+</Project>
+
