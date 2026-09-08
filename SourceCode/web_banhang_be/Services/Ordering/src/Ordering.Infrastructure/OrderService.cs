@@ -1,4 +1,4 @@
-﻿using BuildingBlocks.Outbox;
+using BuildingBlocks.Outbox;
 using BuildingBlocks.EventBus;
 using AuraMart.Ordering.Contracts;
 using System.Text.Json;
@@ -172,7 +172,7 @@ public class OrderService : IOrderService
         {
             RecipientName = o.ShippingAddress.RecipientName,
             PhoneNumber = o.ShippingAddress.PhoneNumber,
-            AddressLine = o.ShippingAddress.AddressLine,
+            AddressLine = o.ShippingAddress.AddressLine ?? string.Empty,
             Ward = o.ShippingAddress.Ward,
             District = o.ShippingAddress.District,
             City = o.ShippingAddress.City

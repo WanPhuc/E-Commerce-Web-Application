@@ -226,7 +226,7 @@ jobs:
 
       # Build & Push Frontend Image
       - name: Build & Push Frontend Image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: SourceCode/web_banhang_fe
           file: SourceCode/web_banhang_fe/Dockerfile
@@ -238,7 +238,7 @@ jobs:
 
       # Build & Push YARP API Gateway Image
       - name: Build & Push API Gateway Image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: SourceCode/web_banhang_be
           file: SourceCode/web_banhang_be/Gateway/Dockerfile

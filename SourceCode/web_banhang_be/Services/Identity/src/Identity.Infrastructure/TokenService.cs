@@ -1,4 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -154,7 +154,7 @@ using AuraMart.Identity.Domain.Repositories;
                 }
                 return true;
             }
-            catch (Exception ex) {
+            catch (Exception) {
                 return false;
             }
         } 
