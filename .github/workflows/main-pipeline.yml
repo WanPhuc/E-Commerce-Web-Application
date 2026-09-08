@@ -1,0 +1,268 @@
+name: AuraMart CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+      - 'fix/**'
+      - 'dev/**'
+      - 'develop'
+    tags:
+      - 'v*'
+    paths:
+      - 'SourceCode/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'SourceCode/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  # -------------------------------------------------------------
+  # Job 1: Phat hien thay doi theo thu muc (Path Filtering)
+  # -------------------------------------------------------------
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      fe: ${{ steps.filter.outputs.fe }}
+      be: ${{ steps.filter.outputs.be }}
+      workflows: ${{ steps.filter.outputs.workflows }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Paths Filter
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            fe:
+              - 'SourceCode/web_banhang_fe/**'
+            be:
+              - 'SourceCode/web_banhang_be/**'
+            workflows:
+              - '.github/workflows/**'
+
+  # -------------------------------------------------------------
+  # Job 2: Frontend CI (Angular 21 + Vitest + Build)
+  # -------------------------------------------------------------
+  frontend-ci:
+    name: Frontend CI
+    needs: detect-changes
+    if: |
+      always() &&
+      (needs.detect-changes.outputs.fe == 'true' ||
+       needs.detect-changes.outputs.workflows == 'true' ||
+       github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: SourceCode/web_banhang_fe
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: SourceCode/web_banhang_fe/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Frontend Unit Tests
+        run: npm run test:ci
+
+      - name: Build Frontend (Production)
+        run: npm run build -- --configuration production
+
+      - name: Summary Report
+        if: always()
+        run: |
+          echo "### 🌐 Frontend CI Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** ${{ job.status == 'success' && '✅ PASSED' || '❌ FAILED' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Node Version:** 22" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify on Failure
+        if: failure() && env.WEBHOOK_URL != ''
+        env:
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK || secrets.SLACK_WEBHOOK }}
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+            -d "{\"content\": \"🚨 **[Frontend CI FAILED]**\nRepo: ${{ github.repository }}\nBranch: \`${{ github.ref_name }}\`\nCommit: ${{ github.sha }}\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            "$WEBHOOK_URL" || true
+
+  # -------------------------------------------------------------
+  # Job 3: Backend CI (.NET 10 + Build + All Unit Tests)
+  # -------------------------------------------------------------
+  backend-ci:
+    name: Backend CI
+    needs: detect-changes
+    if: |
+      always() &&
+      (needs.detect-changes.outputs.be == 'true' ||
+       needs.detect-changes.outputs.workflows == 'true' ||
+       github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Cache NuGet Packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', 'SourceCode/web_banhang_be/WebBanHang.sln') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore Backend Solution
+        run: dotnet restore SourceCode/web_banhang_be/WebBanHang.sln
+
+      - name: Build Solution (Release)
+        run: dotnet build SourceCode/web_banhang_be/WebBanHang.sln -c Release --no-restore
+
+      - name: Run All Unit Tests
+        run: |
+          echo "Running unit test suite across all services..."
+          dotnet test SourceCode/web_banhang_be/WebBanHang.sln -c Release --no-build --filter "FullyQualifiedName!~Integration"
+
+      - name: Summary Report
+        if: always()
+        run: |
+          echo "### ⚙️ Backend CI Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** ${{ job.status == 'success' && '✅ PASSED' || '❌ FAILED' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target Framework:** .NET 10" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify on Failure
+        if: failure() && env.WEBHOOK_URL != ''
+        env:
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK || secrets.SLACK_WEBHOOK }}
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+            -d "{\"content\": \"🚨 **[Backend CI FAILED]**\nRepo: ${{ github.repository }}\nBranch: \`${{ github.ref_name }}\`\nCommit: ${{ github.sha }}\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            "$WEBHOOK_URL" || true
+
+  # -------------------------------------------------------------
+  # Job 4: CI Gate (Status Check duy nhat cho Branch Protection)
+  # -------------------------------------------------------------
+  ci-gate:
+    name: CI Quality Gate
+    needs: [detect-changes, frontend-ci, backend-ci]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate CI Results
+        run: |
+          FE_STATUS="${{ needs.frontend-ci.result }}"
+          BE_STATUS="${{ needs.backend-ci.result }}"
+
+          echo "Frontend CI status: $FE_STATUS"
+          echo "Backend CI status: $BE_STATUS"
+
+          if [ "$FE_STATUS" = "failure" ] || [ "$BE_STATUS" = "failure" ]; then
+            echo "❌ CI Quality Gate: FAILED (Frontend or Backend CI encountered errors)"
+            exit 1
+          fi
+
+          echo "✅ CI Quality Gate: PASSED (All tests and builds succeeded or skipped safely)"
+
+  # -------------------------------------------------------------
+  # Job 5: CD - Docker Release (Chi chay khi CI PASS tren nhanh main)
+  # -------------------------------------------------------------
+  docker-release:
+    name: Docker Release (CD)
+    needs: [ci-gate]
+    if: |
+      (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      needs.ci-gate.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Image Owner & Tag Names
+        run: |
+          IMAGE_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          BUILD_NUM="${{ github.run_number }}"
+
+          echo "IMAGE_OWNER=$IMAGE_OWNER" >> $GITHUB_ENV
+          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+          echo "BUILD_NUM=$BUILD_NUM" >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build & Push Frontend Image
+      - name: Build & Push Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: SourceCode/web_banhang_fe
+          file: SourceCode/web_banhang_fe/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_OWNER }}/auramart-fe:latest
+            ghcr.io/${{ env.IMAGE_OWNER }}/auramart-fe:${{ env.SHORT_SHA }}
+            ghcr.io/${{ env.IMAGE_OWNER }}/auramart-fe:v1.0.${{ env.BUILD_NUM }}
+
+      # Build & Push YARP API Gateway Image
+      - name: Build & Push API Gateway Image
+        uses: docker/build-push-action@v5
+        with:
+          context: SourceCode/web_banhang_be
+          file: SourceCode/web_banhang_be/Gateway/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_OWNER }}/auramart-gateway:latest
+            ghcr.io/${{ env.IMAGE_OWNER }}/auramart-gateway:${{ env.SHORT_SHA }}
+            ghcr.io/${{ env.IMAGE_OWNER }}/auramart-gateway:v1.0.${{ env.BUILD_NUM }}
+
+      - name: Release Summary
+        if: always()
+        run: |
+          echo "### 🚀 CD Docker Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Registry:** \`ghcr.io\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Images Released:**" >> $GITHUB_STEP_SUMMARY
+          echo "  - \`ghcr.io/${{ env.IMAGE_OWNER }}/auramart-fe:${{ env.SHORT_SHA }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "  - \`ghcr.io/${{ env.IMAGE_OWNER }}/auramart-gateway:${{ env.SHORT_SHA }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tags:** \`:latest\`, \`:${{ env.SHORT_SHA }}\`, \`:v1.0.${{ env.BUILD_NUM }}\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify Release Success
+        if: success() && env.WEBHOOK_URL != ''
+        env:
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK || secrets.SLACK_WEBHOOK }}
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+            -d "{\"content\": \"🚀 **[Docker Release SUCCEEDED]**\nImages: \`auramart-fe\`, \`auramart-gateway\`\nTag: \`v1.0.${{ env.BUILD_NUM }}\` (\`${{ env.SHORT_SHA }}\`)\nBranch: \`${{ github.ref_name }}\`\"}" \
+            "$WEBHOOK_URL" || true

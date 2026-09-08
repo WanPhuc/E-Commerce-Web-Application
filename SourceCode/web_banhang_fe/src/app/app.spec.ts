@@ -1,10 +1,26 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { TranslateModule } from '@ngx-translate/core';
+import { of } from 'rxjs';
 import { App } from './app';
+import { AuthService } from './core/services/auth/auth.service';
 
 describe('App', () => {
+  const mockAuthService = {
+    me$: of(null),
+    getAndClearLastRoute: () => null,
+    saveCurrentRoute: () => {}
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App],
+      imports: [App, TranslateModule.forRoot()],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        { provide: AuthService, useValue: mockAuthService }
+      ]
     }).compileComponents();
   });
 
@@ -14,10 +30,11 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should initialize with loading state resolved', () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, client');
+    const app = fixture.componentInstance;
+    fixture.detectChanges();
+    expect(app.loading()).toBe(false);
   });
 });
+
