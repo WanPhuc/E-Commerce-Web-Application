@@ -112,6 +112,12 @@ public class CustomAuthorizeMiddleware
         try
         {
             var client = factory.CreateClient("identity");
+            if (client.BaseAddress == null)
+            {
+                var baseUrl = configuration["IdentityApi:BaseUrl"] ?? "http://identity-api:8080";
+                client.BaseAddress = new Uri(baseUrl);
+            }
+            client.DefaultRequestHeaders.Remove("X-Internal-Api-Key");
             client.DefaultRequestHeaders.Add("X-Internal-Api-Key", configuration["InternalApi:Key"] ?? "dev-internal-key");
             var response = await client.GetAsync($"/internal/users/{userId}/exists");
             response.EnsureSuccessStatusCode();

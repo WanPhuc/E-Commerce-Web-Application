@@ -16,12 +16,12 @@ export const roleGuard=(roles:String[]):CanActivateFn=>{
                         return true;
                     }
                         
-                    route.navigateByUrl('/accessdenied');
+                    route.navigateByUrl('/auth/accessdenied');
                     return false;
                     
                 }
             ),catchError(()=>{
-                route.navigateByUrl('/signin');
+                route.navigateByUrl('/auth/signin');
                 return of(false);
             })
         )

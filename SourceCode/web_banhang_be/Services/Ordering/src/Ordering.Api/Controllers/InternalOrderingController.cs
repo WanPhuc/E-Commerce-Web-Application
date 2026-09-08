@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AuraMart.Ordering.Infrastructure.Persistence;
 using AuraMart.Ordering.Domain;
@@ -113,6 +113,54 @@ public class InternalOrderingController : ControllerBase
 
         await _db.SaveChangesAsync();
         return Ok(new { order.Id, order.Status });
+    }
+
+    // GET internal/ordering/stats/summary
+    [HttpGet("stats/summary")]
+    public async Task<IActionResult> GetOrderStats()
+    {
+        if (!IsAuthorized()) return Denied();
+
+        var now = DateTime.UtcNow;
+        var thisMonthStart = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var ordersThisMonth = await _db.Orders.AsNoTracking().CountAsync();
+        var ordersLastMonth = await _db.Orders.AsNoTracking().CountAsync(o => o.CreatedAt < thisMonthStart);
+
+        var revenueThisMonth = await _db.Orders.AsNoTracking()
+            .Where(o => o.PaidAt != null && (o.Status == "Paid" || o.Status == "Completed"))
+            .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
+
+        var revenueLastMonth = await _db.Orders.AsNoTracking()
+            .Where(o => o.PaidAt != null && o.PaidAt < thisMonthStart && (o.Status == "Paid" || o.Status == "Completed"))
+            .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
+
+        return Ok(new
+        {
+            totalOrdersThisMonth = ordersThisMonth,
+            totalOrdersLastMonth = ordersLastMonth,
+            revenueThisMonth,
+            revenueLastMonth
+        });
+    }
+
+    // GET internal/ordering/stats/orders-for-chart?from=&to=
+    [HttpGet("stats/orders-for-chart")]
+    public async Task<IActionResult> GetOrdersForChart([FromQuery] DateTime from, [FromQuery] DateTime to)
+    {
+        if (!IsAuthorized()) return Denied();
+
+        var orders = await _db.Orders.AsNoTracking()
+            .Where(o => o.CreatedAt >= from && o.CreatedAt < to)
+            .Select(o => new { o.CreatedAt, o.PaidAt, o.TotalAmount, o.Status })
+            .ToListAsync();
+
+        var baseOrders = await _db.Orders.AsNoTracking().CountAsync(o => o.CreatedAt < from);
+        var baseRevenue = await _db.Orders.AsNoTracking()
+            .Where(o => o.PaidAt != null && o.PaidAt < from && (o.Status == "Paid" || o.Status == "Completed"))
+            .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
+
+        return Ok(new { baseOrders, baseRevenue, orders });
     }
 
     public record CreateOrderRequest(

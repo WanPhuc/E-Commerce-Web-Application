@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using AuraMart.Identity.Infrastructure.Persistence;
 using WebBanHang.Data.Seeders;
 
@@ -44,6 +44,10 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 
 builder.Services.AddSingleton<BuildingBlocks.Redis.ICacheService, BuildingBlocks.Redis.RedisCacheService>();
+builder.Services.AddHttpClient("identity", c => c.BaseAddress = new Uri(builder.Configuration["IdentityApi:BaseUrl"] ?? "http://identity-api:8080"));
+builder.Services.AddHttpClient("catalog", c => c.BaseAddress = new Uri(builder.Configuration["CatalogApi:BaseUrl"] ?? "http://catalog-api:8080"));
+builder.Services.AddHttpClient("seller", c => c.BaseAddress = new Uri(builder.Configuration["SellerApi:BaseUrl"] ?? "http://seller-api:8080"));
+builder.Services.AddHttpClient("ordering", c => c.BaseAddress = new Uri(builder.Configuration["OrderingApi:BaseUrl"] ?? "http://ordering-api:8080"));
 builder.Services.AddHttpClient("core", c => c.BaseAddress = new Uri(builder.Configuration["CoreApi:BaseUrl"] ?? "http://api:8080"));
 
 builder.Services.AddControllers()

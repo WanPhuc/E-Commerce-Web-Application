@@ -70,6 +70,10 @@ services:
       ConnectionStrings__IdentityConnection: Host=identity-db;Database=identity_db;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres};
       ASPNETCORE_URLS: http://+:8080
       Redis__ConnectionString: redis:6379
+      IdentityApi__BaseUrl: http://identity-api:8080
+      CatalogApi__BaseUrl: http://catalog-api:8080
+      SellerApi__BaseUrl: http://seller-api:8080
+      OrderingApi__BaseUrl: http://ordering-api:8080
     depends_on:
       - identity-db
       - redis
